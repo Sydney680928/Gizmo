@@ -23,7 +23,7 @@ namespace Gizmo.Primitives;
 
 internal static class WindowPrimitives
 {
-    // ── window.run ────────────────────────────────────────────────────────────
+    // ── window.show ────────────────────────────────────────────────────────────
 
     /// <summary>
     /// Pops the window definition record, starts Terminal.Gui on a dedicated thread,
@@ -31,13 +31,15 @@ internal static class WindowPrimitives
     /// The engine is idle during the await, so action blocks can safely call
     /// RunAsync/Execute from TG event handlers.
     /// </summary>
-    public static async Task<EvalResult> Run(MogwaiEngine engine, UiContext context)
+    public static async Task<EvalResult> Show(MogwaiEngine engine, UiContext context)
     {
         var sig = engine.StackSign(1);
         if (sig.Count == 0)
-            return EvalResult.Failure(engine, Error.TooFewArgumentsError, "window.run");
+            return EvalResult.Failure(engine, Error.TooFewArgumentsError, "window.show");
         if (sig[0] != typeof(MOGRecord))
-            return EvalResult.Failure(engine, Error.BadArgumentTypeError, "window.run");
+            return EvalResult.Failure(engine, Error.BadArgumentTypeError, "window.show");
+        if (!string.IsNullOrEmpty(context.ActiveWindowName))
+            return EvalResult.Failure(engine, Error.OperationNotSupportedError, "window.show");
 
         var windowDef = engine.StackPopRecord();
 
@@ -56,6 +58,7 @@ internal static class WindowPrimitives
 
                 var window = WindowBuilder.Build(windowDef, engine, context);
                 context.RunWithPump(engine, window);
+                context.ClosedWindowName = context.ActiveWindowName;
                 context.ActiveWindowName = "";
                 app.Dispose();
 
@@ -75,7 +78,36 @@ internal static class WindowPrimitives
         };
 
         tgThread.Start();
-        return await tcs.Task;
+        var evalResult = await tcs.Task;
+
+        // Push result record onto MOGWAI stack (on MOGWAI thread)
+        var closeRecord = new MOGRecord(engine);
+        closeRecord.SetName("window", context.ClosedWindowName);
+        if (context.CloseStatus is not null)
+            closeRecord.SetItem("status", context.CloseStatus);
+        else
+            closeRecord.SetNull("status");
+        engine.StackPush(closeRecord);
+
+        return evalResult;
+    }
+
+    // ── window.hide ─────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Pops one mandatory value (any type) from the stack, stores it as CloseStatus,
+    /// and stops the TG application. window.show will push a result record
+    /// [name: 'xxx' status: value] when it returns.
+    /// </summary>
+    public static EvalResult Hide(MogwaiEngine engine, UiContext context)
+    {
+        var sig = engine.StackSign(1);
+        if (sig.Count == 0)
+            return EvalResult.Failure(engine, Error.TooFewArgumentsError, "window.hide");
+
+        context.CloseStatus = engine.StackPop();
+        context.App?.RequestStop();
+        return EvalResult.NoError;
     }
 
     // ── window.active ─────────────────────────────────────────────────────────

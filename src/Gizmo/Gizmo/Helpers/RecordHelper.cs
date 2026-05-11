@@ -99,11 +99,14 @@ internal static class RecordHelper
     /// <summary>
     /// Returns the MOGFunction for a named event (onClick, onChange, onValidate, onSelect, onActivate),
     /// or null if absent.
+    /// Accepts both MOGFunction (« … ») and MOGCode ({ … }), converting the latter via ToFunction().
     /// </summary>
     public static MOGFunction? GetEvent(MOGRecord rec, string eventName)
     {
         if (!rec.Items.TryGetValue(eventName, out var val)) return null;
-        return val as MOGFunction;
+        if (val is MOGFunction func) return func;
+        if (val is MOGCode code) return code.ToFunction();
+        return null;
     }
 
     // ── Presence ──────────────────────────────────────────────────────────────

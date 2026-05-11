@@ -292,12 +292,13 @@ internal static class ComponentFactory
 
     private static View CreateListView(MOGRecord def, MogwaiEngine engine, UiContext context)
     {
-        var items = RecordHelper.GetStringList(def, "items");
+        var items  = RecordHelper.GetStringList(def, "items");
+        var height = RecordHelper.GetInt(def, "height", 10);
         var lv = new ListView
         {
             Source = new ListWrapper<string>(new ObservableCollection<string>(items)),
-            Width = Dim.Fill(),
-            Height = Dim.Fill()
+            Width  = Dim.Fill(),
+            Height = Dim.Absolute(height)
         };
 
         if (RecordHelper.GetEvent(def, "onSelect") is MOGFunction onSelect)
@@ -346,12 +347,13 @@ internal static class ComponentFactory
             dt.Rows.Add(dr);
         }
 
+        var height = RecordHelper.GetInt(def, "height", 10);
         var tv = new TableView
         {
-            Table = new DataTableSource(dt),
+            Table         = new DataTableSource(dt),
             FullRowSelect = true,
-            Width = Dim.Fill(),
-            Height = Dim.Fill()
+            Width         = Dim.Fill(),
+            Height        = Dim.Absolute(height)
         };
 
         tv.BorderStyle = LineStyle.Single;
@@ -409,11 +411,12 @@ internal static class ComponentFactory
 
     private static View CreateFrame(MOGRecord def, MogwaiEngine engine, UiContext context)
     {
+        var height = RecordHelper.GetInt(def, "height", 10);
         var frame = new FrameView
         {
-            Title = RecordHelper.GetString(def, "title"),
-            Width = Dim.Fill(),
-            Height = Dim.Fill()
+            Title  = RecordHelper.GetString(def, "title"),
+            Width  = Dim.Fill(),
+            Height = Dim.Absolute(height)
         };
 
         AddChildren(frame, RecordHelper.GetRecordList(def, "childs"), engine, context);

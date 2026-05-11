@@ -43,10 +43,11 @@ public sealed class UiDelegate : IDelegate
 
     public string[] HostFunctions(MogwaiEngine engine) =>
     [
-        "window.run",
+        "window.show",
         "window.update",
         "window.active",
         "window.current",
+        "window.hide",
         "dialog.show",
         "msgbox.show",
         "filedialog.show",
@@ -59,10 +60,11 @@ public sealed class UiDelegate : IDelegate
     {
         return word switch
         {
-            "window.run" => await WindowPrimitives.Run(engine, _context),
+            "window.show" => await WindowPrimitives.Show(engine, _context),
             "window.update" => WindowPrimitives.Update(engine, _context),
             "window.active" => WindowPrimitives.Active(engine, _context),
             "window.current" => WindowPrimitives.Current(engine, _context),
+            "window.hide" => WindowPrimitives.Hide(engine, _context),
             "dialog.show" => await DialogPrimitives.Show(engine, _context),
             "msgbox.show" => await MsgBoxPrimitives.Show(engine, _context),
             "filedialog.show" => await FileDialogPrimitives.Show(engine, _context),

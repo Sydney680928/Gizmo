@@ -31,6 +31,12 @@ internal sealed class UiContext
     /// <summary>Name of the currently displayed window (empty if none).</summary>
     public string ActiveWindowName { get; set; } = "";
 
+    /// <summary>Name of the window that just closed — captured before Reset for window.run result.</summary>
+    public string ClosedWindowName { get; set; } = "";
+
+    /// <summary>Value passed to window.close — pushed as status in window.run result record.</summary>
+    public MOGObject? CloseStatus { get; set; }
+
     /// <summary>Stores an error generated during the pump loop, to be propagated by window.run.</summary>
     public EvalResult? PumpError { get; set; }
 
@@ -51,11 +57,13 @@ internal sealed class UiContext
     public void Reset()
     {
         _components.Clear();
-        ActiveWindow     = null;
-        ActiveWindowName = "";
-        AppTcs           = null;
-        App              = null;
-        PumpError        = null;
+        ActiveWindow      = null;
+        ActiveWindowName  = "";
+        ClosedWindowName  = "";
+        CloseStatus       = null;
+        AppTcs            = null;
+        App               = null;
+        PumpError         = null;
     }
 
     // ── Pump helpers ──────────────────────────────────────────────────────────
