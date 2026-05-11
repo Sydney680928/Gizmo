@@ -18,15 +18,14 @@ namespace Gizmo
     {
         static async Task<int> Main(string[] args)
         {
-            Console.Title = "MOGWAI CLI";
+            Console.Title = "GIZMO UI";
             Console.Clear();
 
-            Console.WriteLine("█   █   ███    ████  █     █   ███   ███      █   █  ███");
-            Console.WriteLine("██ ██  █   █  █      █  █  █  █   █   █       █   █   █ ");
-            Console.WriteLine("█ █ █  █   █  █  ██  █  █  █  █████   █       █   █   █ ");
-            Console.WriteLine("█   █  █   █  █   █  ██ █ ██  █   █   █       █   █   █ ");
-            Console.WriteLine("█   █   ███    ████   █   █   █   █  ███       ███   ███");
-            Console.WriteLine();
+            Console.WriteLine(" ████  ███  █████  █     █   ███ ");
+            Console.WriteLine("█       █      █   ██   ██  █   █");
+            Console.WriteLine("█  ██   █    ██    █ █ █ █  █   █");
+            Console.WriteLine("█   █   █   █      █     █  █   █");
+            Console.WriteLine(" ████  ███  █████  █     █   ███ ");
             Console.WriteLine();
             Console.WriteLine();
 
@@ -70,7 +69,7 @@ namespace Gizmo
             while (true)
             {
                 Console.WriteLine();
-                Console.Write("MOGWAI > ");
+                Console.Write("> ");
 
                 var input = Console.ReadLine() ?? string.Empty;
                 var cmd = input.Trim().ToUpper();
@@ -116,14 +115,14 @@ namespace Gizmo
         static void ShowHelp()
         {
             Console.WriteLine();
-            Console.WriteLine("MOGWAI CLI - Help");
+            Console.WriteLine("GIZMO UI - Help");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  mogwai_ui <script.mog>  Run a MOGWAI script from a file.");
+            Console.WriteLine("  gizmo <script.mog>  Run a script from a file.");
             Console.WriteLine();
             Console.WriteLine("Commands (in interactive mode):");
             Console.WriteLine("  studio                  Start network communication with MOGWAI Studio or VS Code extension.");
-            Console.WriteLine("  <file.mog> run          Run MOGWAI script <file.mog>");
+            Console.WriteLine("  <file.mog> run          Run script <file.mog>");
             Console.WriteLine("  bye                     Exit the application.");
         }
     }
