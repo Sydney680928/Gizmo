@@ -1,2 +1,2 @@
-# gizmo-ui
+# GIZMO
 Build TUI applications with MOGWAI scripting
