@@ -2,13 +2,7 @@
 
 **Build Terminal User Interface applications with MOGWAI scripting**
 
-```
- ████  ███  █████  █     █   ███ 
-█       █      █   ██   ██  █   █
-█  ██   █    ██    █ █ █ █  █   █
-█   █   █   █      █     █  █   █
- ████  ███  █████  █     █   ███ 
-```
+![GIZMO](images/gizmo_logo.png)
 
 > ⚠️ **Early preview — v0.1.0**  
 > GIZMO is in active development. APIs may change before the first stable release.
