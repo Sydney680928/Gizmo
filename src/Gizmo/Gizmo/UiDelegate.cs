@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics;
-using System.Net;
+using Gizmo.Primitives;
 using MOGWAI.Engine;
 using MOGWAI.Interfaces;
 using MOGWAI.Objects;
-using Gizmo.Primitives;
+using System.Diagnostics;
+using System.Net;
+using System.Text;
 
 namespace Gizmo;
 
@@ -53,7 +54,8 @@ public sealed class UiDelegate : IDelegate
         "filedialog.show",
         "ui.gprop",
         "ui.sprop",
-        "run"
+        "run",
+        "process.exec"
     ];
 
     public async Task<EvalResult> ExecuteHostFunction(MogwaiEngine engine, string word)
@@ -71,8 +73,86 @@ public sealed class UiDelegate : IDelegate
             "ui.gprop" => PropPrimitives.Get(engine, _context),
             "ui.sprop" => PropPrimitives.Set(engine, _context),
             "run" => await RunPrimitive(engine, word),
+            "process.exec" => await ProcessExec(engine, word),
             _ => EvalResult.NoExternalFunction
         };
+    }
+
+    private async Task<EvalResult> ProcessExec(MogwaiEngine engine, string word)
+    {
+        // [
+        //   filename:         "myservice.exe"   (required)
+        //   arguments:        "--flag value"    (optional)
+        //   workingDirectory: "C:\..."          (optional)
+        //   input:            "stdin data"      (optional)
+        // ] process.exec
+
+        var s = engine.StackSign(1);
+
+        if (s.Count == 0)
+            return EvalResult.Failure(Engine, Error.TooFewArgumentsError, word);
+
+        var record = engine.StackPopRecord();
+        
+        var filename = record.GetItem("filename") as MOGString;
+
+        if (filename == null)
+            return EvalResult.Failure(Engine, Error.BadArgumentValueError, "filename key is mandatory");
+
+        var args = record.GetItem("arguments") as MOGString;
+        var wd = record.GetItem("workingDirectory") as MOGString;
+        var input = record.GetItem("input") as MOGString;
+
+        var process = new Process();
+
+        process.StartInfo.FileName = filename.Value;
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.RedirectStandardInput = input is not null;
+        process.StartInfo.CreateNoWindow = true;
+        process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
+        process.StartInfo.StandardErrorEncoding = Encoding.UTF8;
+
+        if (args is not null)
+            process.StartInfo.Arguments = args.Value;
+
+        if (wd is not null)
+            process.StartInfo.WorkingDirectory = wd.Value;
+
+        try
+        {
+            process.Start();
+
+            // Write stdin before reading stdout/stderr to avoid deadlock
+            if (input is not null)
+            {
+                await process.StandardInput.WriteAsync(input.Value);
+                process.StandardInput.Close();
+            }
+
+            // Read stdout and stderr in parallel to avoid buffer deadlock
+            var outputTask = process.StandardOutput.ReadToEndAsync();
+            var errorTask = process.StandardError.ReadToEndAsync();
+
+            await process.WaitForExitAsync();
+
+            var output = await outputTask;
+            var error = await errorTask;
+
+            var result = new MOGRecord(Engine);
+            result.SetNumber("status", process.ExitCode);
+            result.SetString("output", output.TrimEnd('\r', '\n'));
+            result.SetString("error", error.TrimEnd('\r', '\n'));
+
+            Engine.StackPush(result);
+        }
+        catch
+        {
+            return EvalResult.Failure(Engine, Error.InternalError, "Unable to execute process");
+        }
+
+        return EvalResult.NoError;
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────

@@ -63,8 +63,8 @@ Create a file `hello.mog`:
             label: "Say hello"
             onClick:
             {
-                [name: 'txtName'] ui.gprop -> 'r'
-                "Hello, {! r text: get} !" eval -> 'msg'
+                [name: 'txtName'] ui.gprop -> '$r'
+                "Hello, {! $r text: get} !" eval -> '$msg'
                 [! ui.kind: 'ui.info' title: "Hello" text: @msg] msgbox.show
                 drop
             }
@@ -148,11 +148,11 @@ Use either `{ }` (standard braces) or `« »` (MOGWAI function literals):
         [ui.kind: 'ui.button' label: "Quit"          onClick: { false       window.hide }]
     )
 ]
-window.show -> 'r'
+window.show -> '$r'
 
-# r = [window: 'menu' status: 'settings'] or [window: 'menu' status: false]
+# $r = [window: 'menu' status: 'settings'] or [window: 'menu' status: false]
 
-if (r status: get 'settings' ==) then
+if ($r status: get 'settings' ==) then
 {
     [name: 'settings' title: "Settings" childs: (...)]
     window.show drop
@@ -172,9 +172,9 @@ timer 'clock' every 1000 do
 {
     if (window.current 'main' ==) then
     {
-        now ->date -> 'h'
-        "{! h hour: get}:{! h minute: get}:{! h second: get}" eval -> 'time'
-        [! name: 'lblClock' text: @time] window.update
+        now ->date -> '$h'
+        "{! $h hour: get}:{! $h minute: get}:{! $h second: get}" eval -> '$time'
+        [! name: 'lblClock' text: @$time] window.update
     }
 }
 
