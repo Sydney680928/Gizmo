@@ -229,7 +229,7 @@ Run `gizmo` without arguments to enter interactive mode:
 gizmo
 ```
 
-Type MOGWAI expressions directly, load scripts with `run`, or connect to MOGWAI Studio with `studio`.
+Type MOGWAI expressions directly, load scripts with `run`, or connect to VS Code (via the MOGWAI extension) or MOGWAI Studio with `studio`.
 
 ---
 
