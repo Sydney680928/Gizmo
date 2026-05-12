@@ -14,15 +14,15 @@ jobs:
       matrix:
         include:
           - rid: win-x64
-            output: gizmo-win-x64.exe
+            binary: gizmo.exe
           - rid: osx-x64
-            output: gizmo-osx-x64
+            binary: gizmo
           - rid: osx-arm64
-            output: gizmo-osx-arm64
+            binary: gizmo
           - rid: linux-x64
-            output: gizmo-linux-x64
+            binary: gizmo
           - rid: linux-arm64
-            output: gizmo-linux-arm64
+            binary: gizmo
 
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
 
       - name: Publish ${{ matrix.rid }}
         run: |
-          dotnet publish \
+          dotnet publish src/Gizmo/Gizmo/Gizmo.csproj \
             --configuration Release \
             --runtime ${{ matrix.rid }} \
             --self-contained true \
@@ -47,14 +47,18 @@ jobs:
       - name: Rename binary
         run: |
           cd ./publish/${{ matrix.rid }}
-          # Find the produced binary and rename it
-          find . -maxdepth 1 -type f ! -name "*.pdb" | head -1 | xargs -I {} mv {} ${{ matrix.output }}
+          find . -maxdepth 1 -type f ! -name "*.pdb" | head -1 | xargs -I {} mv {} ${{ matrix.binary }}
+
+      - name: Create archive
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          zip ../../gizmo-${{ github.ref_name }}-${{ matrix.rid }}.zip ${{ matrix.binary }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.rid }}
-          path: ./publish/${{ matrix.rid }}/${{ matrix.output }}
+          path: ./gizmo-${{ github.ref_name }}-${{ matrix.rid }}.zip
 
   release:
     name: Create Release
@@ -66,6 +70,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
+          merge-multiple: true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -73,9 +78,4 @@ jobs:
           name: GIZMO ${{ github.ref_name }}
           draft: true
           prerelease: false
-          files: |
-            ./artifacts/win-x64/gizmo-win-x64.exe
-            ./artifacts/osx-x64/gizmo-osx-x64
-            ./artifacts/osx-arm64/gizmo-osx-arm64
-            ./artifacts/linux-x64/gizmo-linux-x64
-            ./artifacts/linux-arm64/gizmo-linux-arm64
+          files: ./artifacts/*.zip
