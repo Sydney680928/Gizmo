@@ -27,6 +27,56 @@ Most components accept the following keys:
 
 ---
 
+## Colors
+
+All components accept the following optional color keys:
+
+| Key | Type | Description |
+|---|---|---|
+| `forecolor:` | Name | Text color in normal state |
+| `backcolor:` | Name | Background color in normal state |
+| `focusForecolor:` | Name | Text color when the component has focus |
+| `focusBackcolor:` | Name | Background color when the component has focus |
+
+If `focusForecolor:` / `focusBackcolor:` are not specified, they fall back to `forecolor:` / `backcolor:`.
+If `forecolor:` / `backcolor:` are not specified, the component inherits its parent's colors.
+
+**Available colors:**
+
+| Name | Name |
+|---|---|
+| `color.black` | `color.darkgray` |
+| `color.blue` | `color.brightblue` |
+| `color.green` | `color.brightgreen` |
+| `color.cyan` | `color.brightcyan` |
+| `color.red` | `color.brightred` |
+| `color.magenta` | `color.brightmagenta` |
+| `color.yellow` | `color.brightyellow` |
+| `color.white` | `color.gray` |
+
+```mogwai
+# Label with red text — inherits parent background
+[ui.kind: 'ui.label' text: "Error!" forecolor: 'color.red']
+
+# Button with full color scheme
+[
+    ui.kind: 'ui.button'
+    label: "Delete"
+    forecolor:      'color.brightred'
+    backcolor:      'color.black'
+    focusForecolor: 'color.white'
+    focusBackcolor: 'color.red'
+    onClick: { false window.hide }
+]
+```
+
+Colors can also be changed at runtime via `window.update`:
+```mogwai
+[! name: 'lblStatus' forecolor: 'color.red' backcolor: 'color.black'] window.update
+```
+
+---
+
 ## Components reference
 
 ***

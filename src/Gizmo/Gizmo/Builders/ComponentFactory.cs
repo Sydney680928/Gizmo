@@ -16,6 +16,7 @@ using MOGWAI.Engine;
 using MOGWAI.Objects;
 using System.Collections.ObjectModel;
 using System.Data;
+using Terminal.Gui;
 using Terminal.Gui.Drawing;
 using Terminal.Gui.ViewBase;
 using Terminal.Gui.Views;
@@ -33,7 +34,7 @@ internal static class ComponentFactory
 
     // ── Dispatch ──────────────────────────────────────────────────────────────
 
-    public static View? Create(MOGRecord def, MogwaiEngine engine, UiContext context)
+    public static View? Create(MOGRecord def, MogwaiEngine engine, UiContext context, Scheme? inheritedScheme = null)
     {
         var kind = RecordHelper.GetString(def, "ui.kind");
 
@@ -52,7 +53,7 @@ internal static class ComponentFactory
             "ui.listview" => CreateListView(def, engine, context),
             "ui.tableview" => CreateTableView(def, engine, context),
             "ui.progress" => CreateProgress(def),
-            "ui.frame" => CreateFrame(def, engine, context),
+            "ui.frame" => CreateFrame(def, engine, context, inheritedScheme),
             "ui.separator" => (View)new Line { Orientation = Orientation.Horizontal, Width = Dim.Fill() },
             _ => null
         };
@@ -73,13 +74,13 @@ internal static class ComponentFactory
     /// directly to the parent (no wrapper View) so TG v2 focus chain is preserved.
     /// </summary>
     public static void AddChildren(View container, IEnumerable<MOGRecord> childDefs,
-        MogwaiEngine engine, UiContext context)
+        MogwaiEngine engine, UiContext context, Scheme? inheritedScheme = null)
     {
         View? previous = null;
 
         foreach (var def in childDefs)
         {
-            var view = Create(def, engine, context);
+            var view = Create(def, engine, context, inheritedScheme);
             if (view is null) continue;
 
             var kind = RecordHelper.GetString(def, "ui.kind");
@@ -103,6 +104,7 @@ internal static class ComponentFactory
                 view.Width = Dim.Fill();
 
                 container.Add(label, view);
+                ApplyColorScheme(view, def, inheritedScheme);
                 previous = view;
             }
             else if (kind == "ui.button")
@@ -112,6 +114,7 @@ internal static class ComponentFactory
                 view.Width = Dim.Auto();
 
                 container.Add(view);
+                ApplyColorScheme(view, def, inheritedScheme);
                 previous = view;
             }
             else
@@ -123,6 +126,7 @@ internal static class ComponentFactory
                     view.Width = Dim.Fill();
 
                 container.Add(view);
+                ApplyColorScheme(view, def, inheritedScheme);
                 previous = view;
             }
         }
@@ -357,6 +361,7 @@ internal static class ComponentFactory
         };
 
         tv.BorderStyle = LineStyle.Single;
+        ApplyColorScheme(tv, def);
 
         // Register tv directly so ui.gprop/ui.sprop can access it
         var name = RecordHelper.GetString(def, "name");
@@ -409,7 +414,7 @@ internal static class ComponentFactory
 
     // ── frame ─────────────────────────────────────────────────────────────────
 
-    private static View CreateFrame(MOGRecord def, MogwaiEngine engine, UiContext context)
+    private static View CreateFrame(MOGRecord def, MogwaiEngine engine, UiContext context, Scheme? inheritedScheme = null)
     {
         var height = RecordHelper.GetInt(def, "height", 10);
         var frame = new FrameView
@@ -419,7 +424,13 @@ internal static class ComponentFactory
             Height = Dim.Absolute(height)
         };
 
-        AddChildren(frame, RecordHelper.GetRecordList(def, "childs"), engine, context);
+        // Frame's effective scheme for children: explicit colors override, else propagate inherited
+        var fgColor = ParseColor(RecordHelper.GetString(def, "forecolor"));
+        var bgColor = ParseColor(RecordHelper.GetString(def, "backcolor"));
+        var frameInherited = (fgColor is not null || bgColor is not null)
+            ? frame.GetScheme()
+            : inheritedScheme;
+        AddChildren(frame, RecordHelper.GetRecordList(def, "childs"), engine, context, frameInherited);
         return frame;
     }
 
@@ -483,9 +494,14 @@ internal static class ComponentFactory
     /// </summary>
     internal static void ApplyProperties(View view, MOGRecord rec)
     {
+        // Color scheme must be applied as a whole (needs all 4 keys together)
+        if (rec.Items.Keys.Any(k => k is "forecolor" or "backcolor" or "focusForecolor" or "focusBackcolor"))
+            ApplyColorScheme(view, rec);
+
         foreach (var (key, val) in rec.Items)
         {
             if (key == "name") continue;
+            if (key is "forecolor" or "backcolor" or "focusForecolor" or "focusBackcolor") continue;
             ApplyProperty(view, key, val);
         }
         view.SetNeedsDraw();
@@ -520,6 +536,56 @@ internal static class ComponentFactory
                 lv2.Source = new ListWrapper<string>(new ObservableCollection<string>(newItems));
                 break;
         }
+    }
+
+    // ── Color support ─────────────────────────────────────────────────────────
+
+    private static Color? ParseColor(string name) => name switch
+    {
+        "color.black"         => Color.Black,
+        "color.blue"          => Color.Blue,
+        "color.green"         => Color.Green,
+        "color.cyan"          => Color.Cyan,
+        "color.red"           => Color.Red,
+        "color.magenta"       => Color.Magenta,
+        "color.yellow"        => Color.Yellow,
+        "color.white"         => Color.White,
+        "color.darkgray"      => Color.DarkGray,
+        "color.brightblue"    => Color.BrightBlue,
+        "color.brightgreen"   => Color.BrightGreen,
+        "color.brightcyan"    => Color.BrightCyan,
+        "color.brightred"     => Color.BrightRed,
+        "color.brightmagenta" => Color.BrightMagenta,
+        "color.brightyellow"  => Color.BrightYellow,
+        "color.gray"          => Color.Gray,
+        _ => null
+    };
+
+    internal static void ApplyColorScheme(View view, MOGRecord def, Scheme? inheritedScheme = null)
+    {
+        var fg      = ParseColor(RecordHelper.GetString(def, "forecolor"));
+        var bg      = ParseColor(RecordHelper.GetString(def, "backcolor"));
+        var focusFg = ParseColor(RecordHelper.GetString(def, "focusForecolor"));
+        var focusBg = ParseColor(RecordHelper.GetString(def, "focusBackcolor"));
+
+        if (fg is null && bg is null && focusFg is null && focusBg is null)
+            return; // no colors defined — keep TG defaults
+
+        // Prefer inherited scheme > parent's scheme > own defaults
+        var current      = view.GetScheme() ?? new Scheme();
+        var parentScheme = inheritedScheme ?? view.SuperView?.GetScheme() ?? current;
+
+        var normalFg = fg      ?? parentScheme.Normal.Foreground;
+        var normalBg = bg      ?? parentScheme.Normal.Background;
+        var fFg      = focusFg ?? fg      ?? parentScheme.Focus.Foreground;
+        var fBg      = focusBg ?? bg      ?? parentScheme.Focus.Background;
+
+        view.SetScheme(new Scheme(current)
+        {
+            Normal    = new Terminal.Gui.Drawing.Attribute(normalFg, normalBg),
+            Focus     = new Terminal.Gui.Drawing.Attribute(fFg, fBg),
+            HotFocus  = new Terminal.Gui.Drawing.Attribute(fFg, fBg),
+        });
     }
 
     private static string MogStr(MOGObject val) => val switch

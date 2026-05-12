@@ -7,6 +7,10 @@
 > ⚠️ **Early preview — v0.1.0**  
 > GIZMO is in active development. APIs may change before the first stable release.
 
+![License](https://img.shields.io/badge/license-Apache%202.0-blue)
+![.NET](https://img.shields.io/badge/.NET-10-purple)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+
 ---
 
 ## What is GIZMO?
@@ -275,6 +279,12 @@ dotnet publish -c Release -r linux-arm64 --self-contained
 - [ ] Component color customization
 - [ ] Built-in script editor (lightweight IDE within GIZMO)
 - [ ] MOGWAI Studio integration
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the full history of changes.
 
 ---
 

@@ -42,6 +42,8 @@ internal static class WindowBuilder
         };
 
         context.ActiveWindow = window;
+        ComponentFactory.ApplyColorScheme(window, def);
+        var windowScheme = window.GetScheme();
 
         // ── Menu bar (Bar with Shortcuts) ─────────────────────────────────────
         if (RecordHelper.HasKey(def, "menu"))
@@ -60,7 +62,7 @@ internal static class WindowBuilder
         }
 
         // ── Child components ──────────────────────────────────────────────────
-        ComponentFactory.AddChildren(window, RecordHelper.GetRecordList(def, "childs"), engine, context);
+        ComponentFactory.AddChildren(window, RecordHelper.GetRecordList(def, "childs"), engine, context, windowScheme);
 
         return window;
     }

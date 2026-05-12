@@ -45,6 +45,10 @@ A window is defined as a MOGWAI record with the following keys:
 | `childs:` | List | List of component definition records |
 | `menu:` | List | Optional menu bar definition |
 | `statusbar:` | List | Optional status bar definition |
+| `forecolor:` | Name | Window text color (e.g. `'color.yellow'`) |
+| `backcolor:` | Name | Window background color (e.g. `'color.blue'`) |
+| `focusForecolor:` | Name | Text color for focused components inside the window |
+| `focusBackcolor:` | Name | Background color for focused components inside the window |
 | `onShow:` | Code/Function | Executed just before the window is displayed |
 | `onHide:` | Code/Function | Executed just after the window is closed |
 
@@ -52,6 +56,8 @@ A window is defined as a MOGWAI record with the following keys:
 [
     name: 'main'
     title: "My Application"
+    backcolor: 'color.blue'
+    forecolor: 'color.yellow'
 
     onShow:
     {
