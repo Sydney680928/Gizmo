@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build ${{ matrix.rid }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - rid: win-x64
+            output: gizmo-win-x64.exe
+          - rid: osx-x64
+            output: gizmo-osx-x64
+          - rid: osx-arm64
+            output: gizmo-osx-arm64
+          - rid: linux-x64
+            output: gizmo-linux-x64
+          - rid: linux-arm64
+            output: gizmo-linux-arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish ${{ matrix.rid }}
+        run: |
+          dotnet publish \
+            --configuration Release \
+            --runtime ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:EnableCompressionInSingleFile=true \
+            --output ./publish/${{ matrix.rid }}
+
+      - name: Rename binary
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          # Find the produced binary and rename it
+          find . -maxdepth 1 -type f ! -name "*.pdb" | head -1 | xargs -I {} mv {} ${{ matrix.output }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: ./publish/${{ matrix.rid }}/${{ matrix.output }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: GIZMO ${{ github.ref_name }}
+          draft: true
+          prerelease: false
+          files: |
+            ./artifacts/win-x64/gizmo-win-x64.exe
+            ./artifacts/osx-x64/gizmo-osx-x64
+            ./artifacts/osx-arm64/gizmo-osx-arm64
+            ./artifacts/linux-x64/gizmo-linux-x64
+            ./artifacts/linux-arm64/gizmo-linux-arm64
