@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Gizmo.Primitives;
+using System.Reflection;
 
 namespace Gizmo
 {
@@ -109,10 +110,16 @@ namespace Gizmo
                 }
                 else if (cmd == "ABOUT")
                 {
+                    var appVersion = Assembly.GetExecutingAssembly()
+                      .GetName()
+                      .Version?.ToString(3) ?? "0.1.0";
+
+                    var mogwaiVersion = MOGWAI.Engine.MogwaiEngine.RuntimeVersion.ToString(3);
+
                     Console.WriteLine();
-                    Console.WriteLine("GIZMO v0.1.0");
+                    Console.WriteLine($"GIZMO v{appVersion}");
                     Console.WriteLine("Build TUI apps with MOGWAI scripting");
-                    Console.WriteLine("Built on MOGWAI v8.x · Terminal.Gui v2");
+                    Console.WriteLine($"Built on MOGWAI v{mogwaiVersion} · Terminal.Gui v2");
                     Console.WriteLine();
                 }
                 else
