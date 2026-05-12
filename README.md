@@ -23,6 +23,14 @@ No C#. No compilation. Just a script and `gizmo yourapp.mog`.
 
 ---
 
+## Preview
+
+![GIZMO Component Showcase](images/showcase.png)
+
+*Component showcase running in Windows Terminal with the built-in dark theme.*
+
+---
+
 ## Why GIZMO?
 
 - **Runs anywhere** — from Windows desktop to Raspberry Pi, the same `.mog` script runs on all platforms without modification
