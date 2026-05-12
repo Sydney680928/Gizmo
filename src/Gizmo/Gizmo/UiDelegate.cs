@@ -33,7 +33,7 @@ public sealed class UiDelegate : IDelegate
 
     public UiDelegate()
     {
-        _engine = new MogwaiEngine("MOGWAI_UI", keepAlive: true, useDefaultFolders: true);
+        _engine = new("GIZMO-UI", keepAlive: true, useDefaultFolders: true);
         _engine.Delegate = this;
     }
 

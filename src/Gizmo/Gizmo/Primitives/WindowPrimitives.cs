@@ -57,7 +57,43 @@ internal static class WindowPrimitives
                 context.App = app;
 
                 var window = WindowBuilder.Build(windowDef, engine, context);
+
+                // ── onShow: — after build, before display ─────────────────────────
+                if (RecordHelper.GetEvent(windowDef, "onShow") is MOGFunction onShow)
+                {
+                    var ed = new MOGRecord(engine);
+                    ed.SetName("window", context.ActiveWindowName);
+
+                    ComponentFactory.ExecuteAction(onShow, engine, ed, context)
+                        .GetAwaiter().GetResult();
+
+                    if (context.PumpError is not null)
+                    {
+                        app.Dispose();
+                        tcs.TrySetResult(context.PumpError);
+                        return;
+                    }
+                }
+
                 context.RunWithPump(engine, window);
+
+                // ── onHide: — after close, before result ──────────────────────────
+                if (context.PumpError is null)
+                {
+                    if (RecordHelper.GetEvent(windowDef, "onHide") is MOGFunction onHide)
+                    {
+                        var ed = new MOGRecord(engine);
+                        ed.SetName("window", context.ActiveWindowName);
+                        if (context.CloseStatus is not null)
+                            ed.SetItem("status", context.CloseStatus);
+                        else
+                            ed.SetNull("status");
+
+                        ComponentFactory.ExecuteAction(onHide, engine, ed, context)
+                            .GetAwaiter().GetResult();
+                    }
+                }
+
                 context.ClosedWindowName = context.ActiveWindowName;
                 context.ActiveWindowName = "";
                 app.Dispose();

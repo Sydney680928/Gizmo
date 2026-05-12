@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Gizmo.Primitives;
+
 namespace Gizmo
 {
     internal class Program
@@ -19,19 +21,8 @@ namespace Gizmo
         static async Task<int> Main(string[] args)
         {
             Console.Title = "GIZMO UI";
-            Console.Clear();
-
-            Console.WriteLine(" ████  ███  █████  █     █   ███ ");
-            Console.WriteLine("█       █      █   ██   ██  █   █");
-            Console.WriteLine("█  ██   █    ██    █ █ █ █  █   █");
-            Console.WriteLine("█   █   █   █      █     █  █   █");
-            Console.WriteLine(" ████  ███  █████  █     █   ███ ");
-            Console.WriteLine();
-            Console.WriteLine();
 
             var host = new UiDelegate();
-
-            // Usage: mogwai-ui <script.mog>
 
             if (args.Length > 0)
             {
@@ -52,7 +43,18 @@ namespace Gizmo
                 return 0;
             }
 
-            // edit mode
+            // REPL mode
+       
+            Console.Clear();
+
+            Console.WriteLine(" ████  ███  █████  █     █   ███ ");
+            Console.WriteLine("█       █      █   ██   ██  █   █");
+            Console.WriteLine("█  ██   █    ██    █ █ █ █  █   █");
+            Console.WriteLine("█   █   █   █      █     █  █   █");
+            Console.WriteLine(" ████  ███  █████  █     █   ███ ");
+            Console.WriteLine();
+            Console.WriteLine("Build TUI apps with MOGWAI scripting");
+            Console.WriteLine();
 
             Console.WriteLine("Type 'help' for usage instructions.");
             Console.WriteLine();
@@ -91,7 +93,27 @@ namespace Gizmo
                 }
                 else if (cmd == "HELP")
                 {
-                    ShowHelp();
+                    Console.WriteLine();
+                    Console.WriteLine("GIZMO - Help");
+                    Console.WriteLine();
+                    Console.WriteLine("Usage:");
+                    Console.WriteLine("  gizmo <script.mog>  Run a script from a file.");
+                    Console.WriteLine();
+                    Console.WriteLine("Commands (in interactive mode):");
+                    Console.WriteLine("  studio                  Start network communication with MOGWAI Studio or VS Code extension.");
+                    Console.WriteLine("  <file.mog> run          Run script <file.mog>");
+                    Console.WriteLine("  about                   Show information about GIZMO.");
+                    Console.WriteLine("  help                    Show this help informations.");
+                    Console.WriteLine("  bye                     Exit the application.");
+                    Console.WriteLine();
+                }
+                else if (cmd == "ABOUT")
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("GIZMO v0.1.0");
+                    Console.WriteLine("Build TUI apps with MOGWAI scripting");
+                    Console.WriteLine("Built on MOGWAI v8.x · Terminal.Gui v2");
+                    Console.WriteLine();
                 }
                 else
                 {
@@ -110,20 +132,6 @@ namespace Gizmo
             }
 
             return 0;
-        }
-
-        static void ShowHelp()
-        {
-            Console.WriteLine();
-            Console.WriteLine("GIZMO UI - Help");
-            Console.WriteLine();
-            Console.WriteLine("Usage:");
-            Console.WriteLine("  gizmo <script.mog>  Run a script from a file.");
-            Console.WriteLine();
-            Console.WriteLine("Commands (in interactive mode):");
-            Console.WriteLine("  studio                  Start network communication with MOGWAI Studio or VS Code extension.");
-            Console.WriteLine("  <file.mog> run          Run script <file.mog>");
-            Console.WriteLine("  bye                     Exit the application.");
         }
     }
 }
