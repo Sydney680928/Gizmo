@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [0.1.0] - 2026-05-12
+
+### Added
+
 - **Window primitives** — `window.show`, `window.hide`, `window.update`, `window.active`, `window.current`
 
   - `window.show` opens a window and blocks until closed. Pushes a result record `[window: 'name' status: value]`.
@@ -137,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Self-contained distribution** — published as standalone executables for 5 platforms: `win-x64`, `osx-x64`, `osx-arm64`, `linux-x64`, `linux-arm64`. No .NET runtime required.
 
+---
 
-### Changed
-
-### Fixed
+[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Sydney680928/gizmo/releases/tag/v0.1.0
