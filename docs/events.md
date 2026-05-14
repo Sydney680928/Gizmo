@@ -312,6 +312,8 @@ window.show drop
 
 MOGWAI timers can update the UI at any time. The timer callback runs inside the MOGWAI engine pump (every 50ms), so it can safely call `window.update`.
 
+> **MOGWAI timers remain active while a dialog is displayed** — the dialog has its own pump that keeps the MOGWAI engine alive during modal display.
+
 ```mogwai
 mogwai.reset
 
@@ -340,6 +342,33 @@ window.show drop
 ```
 
 > Use `window.current` inside a timer to check which window is active before calling `window.update` — the timer may still fire after a window has closed.
+
+---
+
+## `window.refresh` — limitation
+
+`window.refresh` forces a screen redraw. However, the MOGWAI pump and TG share the same thread. A `for` loop blocks this thread and prevents TG from redrawing between iterations — `window.refresh` has no effect inside a blocking loop.
+
+```mogwai
+# ✗ Does NOT work — the loop blocks the TG thread
+1 100 for 'i' do
+{
+    [! name: 'bar' value: i] ui.sprop
+    window.refresh   # ignored — TG cannot redraw
+}
+
+# ✓ Correct — the timer yields control to TG between each tick
+0 -> '$i'
+timer 'progress' every 50 do
+{
+    $i 1 + -> '$i'
+    [! name: 'bar' value: $i] ui.sprop
+    if ($i 100 >=) then { 'progress' timer.stop }
+}
+'progress' timer.start
+```
+
+> **Rule**: for any progressive UI update (progress bar, animation, polling...), use a MOGWAI timer rather than a `for` loop.
 
 ---
 

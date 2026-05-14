@@ -33,7 +33,7 @@ public sealed class UiDelegate : IDelegate
 
     public UiDelegate()
     {
-        _engine = new("GIZMO-UI", keepAlive: true, useDefaultFolders: true);
+        _engine = new MogwaiEngine("MOGWAI_UI", keepAlive: true, useDefaultFolders: true);
         _engine.Delegate = this;
     }
 
@@ -49,6 +49,7 @@ public sealed class UiDelegate : IDelegate
         "window.active",
         "window.current",
         "window.hide",
+        "window.refresh",
         "dialog.show",
         "msgbox.show",
         "filedialog.show",
@@ -67,6 +68,7 @@ public sealed class UiDelegate : IDelegate
             "window.active" => WindowPrimitives.Active(engine, _context),
             "window.current" => WindowPrimitives.Current(engine, _context),
             "window.hide" => WindowPrimitives.Hide(engine, _context),
+            "window.refresh" => await WindowPrimitives.Refresh(engine, _context),
             "dialog.show" => await DialogPrimitives.Show(engine, _context),
             "msgbox.show" => await MsgBoxPrimitives.Show(engine, _context),
             "filedialog.show" => await FileDialogPrimitives.Show(engine, _context),

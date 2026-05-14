@@ -149,6 +149,13 @@ internal static class WindowPrimitives
     // ── window.active ─────────────────────────────────────────────────────────
 
     /// <summary>Pushes true if a window is currently displayed, false otherwise.</summary>
+    public static async Task<EvalResult> Refresh(MogwaiEngine engine, UiContext context)
+    {
+        context.ActiveWindow?.SetNeedsDraw();
+        await Task.Delay(1); // yield to TG event loop so it can redraw
+        return EvalResult.NoError;
+    }
+
     public static EvalResult Active(MogwaiEngine engine, UiContext context)
     {
         engine.StackPushBoolean(!string.IsNullOrEmpty(context.ActiveWindowName));

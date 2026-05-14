@@ -52,27 +52,46 @@ internal static class DialogBuilder
             Height = Dim.Auto()
         };
 
-        // ── Add components ────────────────────────────────────────────────────
-        View? previous = null;
-        foreach (var compDef in compDefs)
-        {
-            var view = ComponentFactory.Create(compDef, engine, localContext);
-            if (view is null) continue;
+        ComponentFactory.ApplyColorScheme(dialog, def);
+        var dialogScheme = dialog.GetScheme();
 
-            view.X     = Pos.Absolute(0);
-            view.Y     = previous is null ? Pos.Absolute(0) : Pos.Bottom(previous) + 1;
-            view.Width = Dim.Fill();
-
-            dialog.Add(view);
-            previous = view;
-        }
+        // ── Add components via AddChildren (handles labels + colors) ──────────
+        ComponentFactory.AddChildren(dialog, compDefs, engine, localContext, dialogScheme);
 
         // ── Buttons — AddButton lets app.Run return the button index ──────────
         foreach (var label in buttonLabels)
             dialog.AddButton(new Button { Text = label });
 
-        // ── Run modal with pump — keeps timers alive during dialog ────────────
-        int? buttonResult = context.RunWithPump(engine, dialog) as int?;
+        // ── Run modal with pump via System.Threading.Timer ────────────────────
+        // Using App.AddTimeout would crash when called from within a TG callback
+        // (e.g. onClick). Instead, use a .NET timer + App.Invoke to marshal
+        // MOGWAI execution onto the TG UI thread — keeps timers alive during dialog.
+        var emptyCode  = new MOGCode(engine);
+        var pumpActive = true;
+
+        using var pumpTimer = new System.Threading.Timer(_ =>
+        {
+            if (!pumpActive) return;
+            context.App?.Invoke(() =>
+            {
+                if (!pumpActive) return;
+                var result = emptyCode.Execute().GetAwaiter().GetResult();
+                if (result.IsError)
+                {
+                    context.PumpError = result;
+                    pumpActive = false;
+                    context.App?.RequestStop();
+                }
+                else if (engine.ExitRequested)
+                {
+                    pumpActive = false;
+                    context.App?.RequestStop();
+                }
+            });
+        }, null, dueTime: 0, period: 50);
+
+        int? buttonResult = context.App.Run(dialog) as int?;
+        pumpActive = false;
         dialog.Dispose();
 
         // 1-based status: button 0 → status 1, null/Esc → last button index
@@ -101,7 +120,9 @@ internal static class DialogBuilder
             var view = localContext.GetComponent(name);
             if (view is null) continue;
 
-            var mogValue = ExtractValue(kind, view, engine);
+            // Strip "ui." prefix before matching in ExtractValue
+            var shortKind = kind.StartsWith("ui.") ? kind[3..] : kind;
+            var mogValue = ExtractValue(shortKind, view, engine);
             if (mogValue is not null)
                 result.Items[name] = mogValue;
         }

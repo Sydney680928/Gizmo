@@ -35,6 +35,11 @@ internal static class DialogPrimitives
             return EvalResult.Failure(engine, Error.BadArgumentTypeError, "dialog.show");
 
         var dialogDef = engine.StackPopRecord();
+
+        if (context.App is null)
+            return EvalResult.Failure(engine, Error.OperationNotSupportedError,
+                "dialog.show must be called from within an active window");
+
         var result    = DialogBuilder.ShowModal(dialogDef, engine, context);
         engine.StackPush(result);
 

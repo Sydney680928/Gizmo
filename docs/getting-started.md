@@ -70,7 +70,7 @@ You can type MOGWAI expressions directly, one line at a time.
 
 | Command | Description |
 |---|---|
-| `"hello.mog" run` | Load and execute a `.mog` script file |
+| `"hello.mog" run` | Load and execute a GIZMO script file |
 | `studio` | Connect to VS Code (via MOGWAI extension) or MOGWAI Studio |
 | `help` | Show usage instructions |
 | `bye` | Exit GIZMO |

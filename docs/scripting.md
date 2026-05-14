@@ -4,7 +4,7 @@
 
 ### `run`
 
-Loads and executes a MOGWAI script file (`.mog`). The script runs in the same engine context as the caller.
+Loads and executes a MOGWAI script file (`.mog`). The script runs in the same engine context as the caller. This is a **GIZMO-specific** primitive.
 
 ```
 "path/to/script.mog" run
@@ -19,6 +19,8 @@ Loads and executes a MOGWAI script file (`.mog`). The script runs in the same en
 ```
 
 > `run` raises `MW.1` (parse error) if the file cannot be parsed, and `MW.72` (file operation error) if the file cannot be read.
+
+> To include MOGWAI code (themes, shared variables...) use the MOGWAI built-in `include` primitive instead — `"themes/dark.mog" include`. Use `run` for GIZMO app modules that define windows and UI flows.
 
 ---
 
@@ -70,7 +72,7 @@ $r text: get ?
 
 ### `ui.sprop`
 
-Sets a property of a named component. Equivalent to `window.update` but intended for use from code rather than from event data.
+Sets a property of a named component. Functionally equivalent to `window.update` — both call the same underlying code. The distinction is semantic: use `ui.sprop` from the main script flow, and `window.update` from event handlers and timers.
 
 ```
 [name: 'componentName' property: value] ui.sprop
@@ -79,6 +81,37 @@ Sets a property of a named component. Equivalent to `window.update` but intended
 ```mogwai
 [name: 'lblStatus' text: "Processing..."] ui.sprop
 [name: 'progress1' value: 50]             ui.sprop
+```
+
+---
+
+## `window.refresh`
+
+Forces a screen redraw. Useful after a series of `ui.sprop` or `window.update` calls.
+
+```
+window.refresh
+```
+
+> **Limitation**: `window.refresh` has no effect inside a blocking `for` loop. The MOGWAI pump and TG share the same thread — a loop blocks that thread and prevents TG from redrawing. For progressive UI updates (progress bar, animation...), use a MOGWAI timer instead:
+
+```mogwai
+# ✗ Does NOT work — the loop blocks the TG thread
+1 100 for 'i' do
+{
+    [! name: 'bar' value: i] ui.sprop
+    window.refresh   # ignored
+}
+
+# ✓ Correct — the timer yields control to TG between each tick
+0 -> '$i'
+timer 'progress' every 50 do
+{
+    $i 1 + -> '$i'
+    [! name: 'bar' value: $i] ui.sprop
+    if ($i 100 >=) then { 'progress' timer.stop }
+}
+'progress' timer.start
 ```
 
 ---

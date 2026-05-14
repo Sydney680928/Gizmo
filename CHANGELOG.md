@@ -9,9 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`window.refresh` primitive** — forces a screen redraw. Useful after a series of `ui.sprop` calls from the main script flow.
+
+  > **Limitation**: has no effect inside a blocking `for` loop (the MOGWAI pump and TG share the same thread). Use a MOGWAI timer for progressive UI updates (progress bars, animations...).
+
+- **Color support in `dialog.show`** — the dialog definition record now accepts the same four color keys as windows and components: `forecolor:`, `backcolor:`, `focusForecolor:`, `focusBackcolor:`. Colors are inherited by child components.
+
+  ```
+  [
+      title: "Nouveau contact"
+      backcolor: 'color.black'
+      forecolor: 'color.white'
+      focusForecolor: 'color.black'
+      focusBackcolor: 'color.brightcyan'
+      childs:
+      (
+          [ui.kind: 'ui.edit' name: 'name' label: "Nom :" text: ""]
+          [ui.kind: 'ui.buttons' items: ("OK" "Annuler")]
+      )
+  ] dialog.show -> '$r'
+  ```
+
+- **MOGWAI timers active during dialogs** — MOGWAI timers now continue to fire while a dialog is displayed. The dialog uses its own pump mechanism (`System.Threading.Timer` + `App.Invoke`) to keep the MOGWAI engine alive during modal display.
+
+- **`about` command in REPL** — displays GIZMO version, MOGWAI version, and license information.
+
+- **`dialog.show` guard** — raises `MW.7` (operation not supported) if called outside an active window, with a clear error message.
+
 ### Changed
 
+- **`ui.buttons` must be placed inside `childs:`** — the button bar definition is now part of the `childs:` list of the dialog definition record, consistent with other components.
+
 ### Fixed
+
+- **Dialog component values** — field values (text, checked, index...) are now correctly returned in the result record. Previously, the `ui.` prefix in `ui.kind` values caused all fields to return `null`.
+
+- **Dialog component labels** — external labels (`label:` key) are now correctly displayed in dialogs. The dialog builder now uses `ComponentFactory.AddChildren` which handles label creation.
 
 ## [0.1.0] - 2026-05-12
 
@@ -139,7 +172,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   "modules/settings.mog" run
   ```
 
-- **Interactive REPL** — run `gizmo` without arguments for interactive mode. Commands: `studio`, `help`, `bye`.
+- **Interactive REPL** — run `gizmo` without arguments for interactive mode. Commands: `studio`, `help`, `about`, `bye`.
 
 - **MOGWAI Studio / VS Code integration** — `studio` command connects to MOGWAI Studio or the VS Code MOGWAI extension for live debugging.
 

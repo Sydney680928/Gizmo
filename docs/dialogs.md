@@ -12,13 +12,46 @@ Shows a modal dialog with custom components and buttons.
 [dialog definition record] dialog.show
 ```
 
+> `dialog.show` must be called from within an active window (from `onClick:`, `onShow:`, or any event handler). Calling it outside a window raises `MW.7`.
+
 The dialog definition record accepts the following keys:
 
 | Key | Type | Description |
 |---|---|---|
 | `title:` | String | Dialog title |
-| `childs:` | List | Component definition records (same as window `childs:`) |
-| `ui.buttons:` | Record | Button bar definition — `[ui.kind: 'ui.buttons' items: ("OK" "Cancel")]` |
+| `childs:` | List | Component definitions — including the `ui.buttons` row |
+| `forecolor:` | Name | Dialog text color |
+| `backcolor:` | Name | Dialog background color |
+| `focusForecolor:` | Name | Focused component text color |
+| `focusBackcolor:` | Name | Focused component background color |
+
+The `ui.buttons` component must be placed **inside `childs:`** as the last item:
+
+```mogwai
+[
+    title: "Nouveau contact"
+    backcolor: 'color.black'
+    forecolor: 'color.white'
+    focusForecolor: 'color.black'
+    focusBackcolor: 'color.brightcyan'
+
+    childs:
+    (
+        [ui.kind: 'ui.edit'     name: 'name'  label: "Nom :"    text: ""]
+        [ui.kind: 'ui.edit'     name: 'email' label: "Email :"  text: ""]
+        [ui.kind: 'ui.password' name: 'pwd'   label: "Mot de passe :" text: ""]
+        [
+            ui.kind: 'ui.combo'
+            name: 'role'
+            label: "Rôle :"
+            options: ("Client" "Fournisseur" "Partenaire")
+            index: 1
+        ]
+        [ui.kind: 'ui.check' name: 'active' label: "Actif" checked: true]
+        [ui.kind: 'ui.buttons' items: ("OK" "Annuler")]
+    )
+] dialog.show -> '$r'
+```
 
 If `ui.buttons:` is omitted, a single "OK" button is added automatically.
 
@@ -30,28 +63,19 @@ Pushes a result record onto the stack:
 | *(field names)* | Any | One key per named component, containing the component's value |
 
 ```mogwai
-[
-    title: "User info"
-    childs:
-    (
-        [ui.kind: 'ui.edit' name: 'firstName' label: "First name:" text: ""]
-        [ui.kind: 'ui.edit' name: 'lastName'  label: "Last name:"  text: ""]
-        [ui.kind: 'ui.check' name: 'active'   label: "Active"      checked: true]
-    )
-    [ui.kind: 'ui.buttons' items: ("Save" "Cancel")]
-] dialog.show -> '$r'
-
-$r ui.status: get -> '$btn'   # 1 = Save, 2 = Cancel
+$r ui.status: get -> '$btn'   # 1 = OK, 2 = Annuler
 
 if ($btn 1 ==) then
 {
-    $r firstName: get ?
-    $r lastName:  get ?
-    $r active:    get ?
+    $r name:   get ?
+    $r email:  get ?
+    $r active: get ?
 }
 ```
 
 > The result record contains only components that have a `name:` key. Labels and separators are excluded.
+
+> MOGWAI timers remain active while a dialog is displayed.
 
 ***
 
