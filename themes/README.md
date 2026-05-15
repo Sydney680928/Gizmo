@@ -19,16 +19,11 @@ Documents/
 The recommended way to include a theme is to place the `themes/` folder inside `Programs/` and use `path.make` to build the path:
 
 ```mogwai
-# Standard path (recommended)
+# Recommended — absolute path via path.programs
 (! path.programs "themes" "dark.mog") path.make mogwai.include
 ```
 
-You can also use a relative path if your script and themes folder are in the same location:
-
-```mogwai
-# Relative path
-"themes/dark.mog" mogwai.include
-```
+> **Important**: the current working directory is the folder of the **GIZMO executable**, not the folder of the `.mog` script. Always use `path.programs` with `path.make` to build reliable absolute paths.
 
 Then use the theme variables in your window definition:
 

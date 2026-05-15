@@ -121,6 +121,8 @@ To build a full path from multiple segments, use `path.make` (equivalent to `Pat
 (! path.programs "themes" "dark.mog") path.make mogwai.include
 ```
 
+> **Important**: the current working directory is the folder of the **GIZMO executable**, not the folder of the `.mog` script being executed. Always use `path.programs` with `path.make` to build reliable absolute paths — do not rely on relative paths like `"themes/dark.mog" mogwai.include`.
+
 > Place your scripts in `Programs/`, your data files in `Files/`. Sub-folders are allowed — for example `Programs/themes/` for themes, `Programs/modules/` for shared code.
 
 ---
