@@ -1,0 +1,25 @@
+# GIZMO — Classic Theme (AMSTRAD inspired)
+# Include this file at the start of your script:
+#   (! path.programs "themes" "classic.mog") path.make mogwai.include
+
+# ── Window ────────────────────────────────────────────────────────────────────
+'color.blue'        -> '$theme.back'
+'color.yellow'      -> '$theme.fore'
+'color.black'       -> '$theme.focusFore'
+'color.cyan'        -> '$theme.focusBack'
+
+# ── Components ────────────────────────────────────────────────────────────────
+'color.black'       -> '$theme.inputBack'
+'color.white'       -> '$theme.inputFore'
+
+# ── Buttons ───────────────────────────────────────────────────────────────────
+'color.black'       -> '$theme.btnFore'
+'color.cyan'        -> '$theme.btnBack'
+'color.black'       -> '$theme.btnFocusFore'
+'color.white'       -> '$theme.btnFocusBack'
+
+# ── Accents ───────────────────────────────────────────────────────────────────
+'color.brightwhite' -> '$theme.accent'
+'color.brightred'   -> '$theme.danger'
+'color.brightgreen' -> '$theme.success'
+'color.brightyellow'-> '$theme.warning'

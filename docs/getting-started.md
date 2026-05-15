@@ -90,6 +90,41 @@ Once the extension is installed, connect it to a running GIZMO instance with the
 
 ---
 
+## Folder structure
+
+When GIZMO starts, the MOGWAI runtime automatically creates the following folder structure in the current user's Documents folder:
+
+```
+Documents/
+└── MOGWAI/
+    ├── Programs/    ← your .mog scripts
+    ├── Usings/      ← plugins and extensions
+    └── Files/       ← data files read and written by your scripts
+```
+
+The paths to these folders are accessible from any MOGWAI script:
+
+| Primitive | Description |
+|---|---|
+| `path.programs` | Path to the Programs folder |
+| `path.files` | Path to the Files folder |
+| `path.usings` | Path to the Usings folder |
+
+To build a full path from multiple segments, use `path.make` (equivalent to `Path.Combine` in C#):
+
+```mogwai
+# Build the path to themes/dark.mog inside Programs
+(! path.programs "themes" "dark.mog") path.make
+# → "C:\Users\<user>\Documents\MOGWAI\Programs\themes\dark.mog"
+
+# Include the file
+(! path.programs "themes" "dark.mog") path.make mogwai.include
+```
+
+> Place your scripts in `Programs/`, your data files in `Files/`. Sub-folders are allowed — for example `Programs/themes/` for themes, `Programs/modules/` for shared code.
+
+---
+
 ## Your first script
 
 Create a file `hello.mog`:

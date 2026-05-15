@@ -1,0 +1,25 @@
+# GIZMO — Dark Theme
+# Include this file at the start of your script:
+#   (! path.programs "themes" "dark.mog") path.make mogwai.include
+
+# ── Window ────────────────────────────────────────────────────────────────────
+'color.black'       -> '$theme.back'         # window background (true black)
+'color.white'       -> '$theme.fore'         # window foreground
+'color.black'       -> '$theme.focusFore'    # focused component foreground
+'color.brightcyan'  -> '$theme.focusBack'    # focused component background
+
+# ── Components ────────────────────────────────────────────────────────────────
+'color.black'       -> '$theme.inputBack'    # input fields background
+'color.white'       -> '$theme.inputFore'    # input fields foreground
+
+# ── Buttons ───────────────────────────────────────────────────────────────────
+'color.brightcyan'  -> '$theme.btnFore'      # button foreground (cyan on black)
+'color.black'       -> '$theme.btnBack'      # button background
+'color.black'       -> '$theme.btnFocusFore' # button focused foreground
+'color.brightcyan'  -> '$theme.btnFocusBack' # button focused background
+
+# ── Accents ───────────────────────────────────────────────────────────────────
+'color.brightcyan'  -> '$theme.accent'       # accent color (highlights, titles)
+'color.brightred'   -> '$theme.danger'       # error / danger color
+'color.brightgreen' -> '$theme.success'      # success color
+'color.brightyellow'-> '$theme.warning'      # warning color
