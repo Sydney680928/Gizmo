@@ -113,9 +113,9 @@ New task: [___________]
 
 ---
 
-## `showcase.mog` — Component showcase
+## `showcase.mog` — Component demo
 
-Demonstrates all available GIZMO components in a single window.
+A visual demo that displays all available GIZMO components in a single window. No actions are wired to the buttons — this script is useful to understand how components are declared and laid out, and to explore the dark theme rendering.
 
 **Components shown:** `ui.label`, `ui.edit`, `ui.password`, `ui.integer`, `ui.float`, `ui.check`, `ui.radio`, `ui.combo`, `ui.tableview`, `ui.progress`, `ui.frame`, `ui.separator`, `ui.button`
 
