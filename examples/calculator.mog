@@ -1,0 +1,160 @@
+mogwai.reset
+
+# ── Theme ─────────────────────────────────────────────────────────────────────
+'color.black'      -> '$tc.back'
+'color.white'      -> '$tc.fore'
+'color.black'      -> '$tc.focFore'
+'color.brightcyan' -> '$tc.focBack'
+'color.brightcyan' -> '$tc.btnFore'
+'color.black'      -> '$tc.btnBack'
+
+# ── Stack registers (HP-style: X = top, Y = second) ──────────────────────────
+0.0 -> '$regX'
+0.0 -> '$regY'
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+# Update stack display
+{
+    "Y:  {! $regY ->str}" eval -> '$ly'
+    "X:  {! $regX ->str}" eval -> '$lx'
+    [! name: 'lblY' text: @$ly] window.update
+    [! name: 'lblX' text: @$lx] window.update
+} -> '$upd'
+
+# Push input field value to stack (if not empty)
+{
+    [name: 'inp'] ui.gprop -> '$g'
+    $g text: get -> '$t'
+    if ($t size 0 >) then
+    {
+        guard
+        {
+            $t ->num -> '$v'
+            $regX -> '$regY'
+            $v -> '$regX'
+            [! name: 'inp' text: ""] window.update
+            $upd eval
+        }
+        else
+        {
+            [! name: 'lblX' text: "invalid input" forecolor: 'color.brightred'] window.update
+            [! name: 'inp' text: ""] window.update
+        }
+    }
+} -> '$push'
+
+# ── Window ────────────────────────────────────────────────────────────────────
+[!
+    name: 'main'
+    title: "RPN Calculator — GIZMO"
+    backcolor: @$tc.back
+    forecolor: @$tc.fore
+    focusForecolor: @$tc.focFore
+    focusBackcolor: @$tc.focBack
+
+    childs:
+    (
+        # ── Stack display ─────────────────────────────────────────────────────
+        [
+            ui.kind: 'ui.frame'
+            title: "Stack"
+            height: 5
+            childs:
+            (
+                [ui.kind: 'ui.label' name: 'lblY' text: "Y:  0"
+                    forecolor: 'color.white']
+                [ui.kind: 'ui.label' name: 'lblX' text: "X:  0"
+                    forecolor: 'color.brightcyan']
+            )
+        ]
+
+        # ── Input ─────────────────────────────────────────────────────────────
+        [ui.kind: 'ui.edit' name: 'inp' label: "Value:" text: ""
+            onValidate: { $push eval }]
+
+        [ui.kind: 'ui.separator']
+
+        # ── ENTER ─────────────────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "ENTER  ↵"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick: { $push eval }]
+
+        # ── Operations ────────────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "+   add"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick:
+            {
+                $push eval
+                $regY $regX + -> '$regX'
+                0.0 -> '$regY'
+                $upd eval
+            }]
+
+        [! ui.kind: 'ui.button' label: "-   subtract"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick:
+            {
+                $push eval
+                $regY $regX - -> '$regX'
+                0.0 -> '$regY'
+                $upd eval
+            }]
+
+        [! ui.kind: 'ui.button' label: "*   multiply"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick:
+            {
+                $push eval
+                $regY $regX * -> '$regX'
+                0.0 -> '$regY'
+                $upd eval
+            }]
+
+        [! ui.kind: 'ui.button' label: "/   divide"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick:
+            {
+                $push eval
+                $regY $regX / -> '$regX'
+                0.0 -> '$regY'
+                $upd eval
+            }]
+
+        [! ui.kind: 'ui.button' label: "+/-  negate"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick:
+            {
+                $push eval
+                $regX -1 * -> '$regX'
+                $upd eval
+            }]
+
+        # ── Clear ─────────────────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "CL  clear"
+            forecolor: 'color.brightred' backcolor: @$tc.btnBack
+            focusForecolor: 'color.white' focusBackcolor: 'color.red'
+            onClick:
+            {
+                0.0 -> '$regX'
+                0.0 -> '$regY'
+                [! name: 'inp' text: ""] window.update
+                $upd eval
+            }]
+
+        [ui.kind: 'ui.separator']
+
+        [! ui.kind: 'ui.button' label: "Close"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick: { false window.hide }]
+    )
+]
+
+window.show drop

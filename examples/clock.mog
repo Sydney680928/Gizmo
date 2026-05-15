@@ -1,0 +1,80 @@
+mogwai.reset
+
+# ── Theme ─────────────────────────────────────────────────────────────────────
+'color.black'        -> '$theme.back'
+'color.white'        -> '$theme.fore'
+'color.black'        -> '$theme.focusFore'
+'color.brightcyan'   -> '$theme.focusBack'
+'color.brightcyan'   -> '$theme.btnFore'
+'color.black'        -> '$theme.btnBack'
+'color.black'        -> '$theme.btnFocusFore'
+'color.brightcyan'   -> '$theme.btnFocusBack'
+
+# ── Clock timer ───────────────────────────────────────────────────────────────
+timer 'clock' every 1000 do
+{
+    if (window.current 'main' ==) then
+    {
+        now ->date -> '$d'
+
+        $d hour:   get "00" ->format -> '$hh'
+        $d minute: get "00" ->format -> '$mm'
+        $d second: get "00" ->format -> '$ss'
+        $d day:    get "00" ->format -> '$dy'
+        $d month:  get "00" ->format -> '$mo'
+        $d year:   get ->str          -> '$yr'
+
+        "{! $hh}:{! $mm}:{! $ss}" eval -> '$time'
+        "{! $dy}/{! $mo}/{! $yr}" eval -> '$date'
+
+        [! name: 'lblTime' text: @$time] window.update
+        [! name: 'lblDate' text: @$date] window.update
+    }
+}
+
+# ── Window ────────────────────────────────────────────────────────────────────
+[!
+    name: 'main'
+    title: "GIZMO Clock"
+    backcolor: @$theme.back
+    forecolor: @$theme.fore
+    focusForecolor: @$theme.focusFore
+    focusBackcolor: @$theme.focusBack
+
+    childs:
+    (
+        [
+            ui.kind: 'ui.frame'
+            title: "Time"
+            height: 4
+            childs:
+            (
+                [ui.kind: 'ui.label' name: 'lblTime' text: "00:00:00" forecolor: 'color.brightcyan']
+            )
+        ]
+
+        [
+            ui.kind: 'ui.frame'
+            title: "Date"
+            height: 4
+            childs:
+            (
+                [ui.kind: 'ui.label' name: 'lblDate' text: "00/00/0000" forecolor: 'color.white']
+            )
+        ]
+
+        [!
+            ui.kind: 'ui.button'
+            label: "Close"
+            forecolor: @$theme.btnFore
+            backcolor: @$theme.btnBack
+            focusForecolor: @$theme.btnFocusFore
+            focusBackcolor: @$theme.btnFocusBack
+            onClick: { false window.hide }
+        ]
+    )
+]
+
+'clock' timer.start
+
+window.show drop

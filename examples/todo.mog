@@ -1,0 +1,126 @@
+mogwai.reset
+
+# ── Theme ─────────────────────────────────────────────────────────────────────
+'color.black'       -> '$tc.back'
+'color.white'       -> '$tc.fore'
+'color.black'       -> '$tc.focFore'
+'color.brightcyan'  -> '$tc.focBack'
+'color.brightcyan'  -> '$tc.btnFore'
+'color.black'       -> '$tc.btnBack'
+
+# ── State ─────────────────────────────────────────────────────────────────────
+() -> '$tasks'    # task list
+0  -> '$selected' # selected index (1-based, 0 = nothing selected)
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+# Refresh listview and counter
+{
+    [! name: 'lstTasks' items: @$tasks] window.update
+    "{! $tasks size ->str} task(s)" eval -> '$lbl'
+    [! name: 'lblCount' text: @$lbl] window.update
+} -> '$refresh'
+
+# Add task from input field
+{
+    [name: 'txtTask'] ui.gprop -> '$g'
+    $g text: get -> '$t'
+    if ($t size 0 >) then
+    {
+        $tasks $t + -> '$tasks'
+        [! name: 'txtTask' text: ""] window.update
+        $refresh eval
+    }
+} -> '$addTask'
+
+# ── Window ────────────────────────────────────────────────────────────────────
+[!
+    name: 'main'
+    title: "Todo List — GIZMO"
+    backcolor: @$tc.back
+    forecolor: @$tc.fore
+    focusForecolor: @$tc.focFore
+    focusBackcolor: @$tc.focBack
+
+    childs:
+    (
+        # ── Counter ───────────────────────────────────────────────────────────
+        [ui.kind: 'ui.label' name: 'lblCount' text: "0 task(s)"
+            forecolor: 'color.brightcyan']
+
+        # ── Task list ─────────────────────────────────────────────────────────
+        [
+            ui.kind: 'ui.listview'
+            name: 'lstTasks'
+            items: ()
+            height: 10
+            onSelect: { ui.eventData index: get -> '$selected' }
+        ]
+
+        # ── New task input ────────────────────────────────────────────────────
+        [ui.kind: 'ui.edit' name: 'txtTask' label: "New task:" text: ""
+            onValidate: { $addTask eval }]
+
+        # ── Add ───────────────────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "Add"
+            forecolor: 'color.brightgreen' backcolor: @$tc.btnBack
+            focusForecolor: 'color.black' focusBackcolor: 'color.brightgreen'
+            onClick: { $addTask eval }]
+
+        # ── Delete selected ───────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "Delete selected"
+            forecolor: 'color.brightred' backcolor: @$tc.btnBack
+            focusForecolor: 'color.white' focusBackcolor: 'color.red'
+            onClick:
+            {
+                if ($selected 0 >) then
+                {
+                    # Rebuild list without the selected item
+                    () -> '$newTasks'
+                    1 $tasks size for 'i' do
+                    {
+                        if (i $selected !=) then
+                        {
+                            $newTasks $tasks i 1 - get + -> '$newTasks'
+                        }
+                    }
+                    $newTasks -> '$tasks'
+                    0 -> '$selected'
+                    $refresh eval
+                }
+            }]
+
+        # ── Clear all ─────────────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "Clear all"
+            forecolor: 'color.brightyellow' backcolor: @$tc.btnBack
+            focusForecolor: 'color.black' focusBackcolor: 'color.yellow'
+            onClick:
+            {
+                [
+                    title: "Confirm"
+                    childs:
+                    (
+                        [ui.kind: 'ui.label' text: "Delete all tasks ?"]
+                        [ui.kind: 'ui.buttons' items: ("Yes" "No")]
+                    )
+                ] dialog.show -> '$ans'
+
+                if ($ans ui.status: get 1 ==) then
+                {
+                    () -> '$tasks'
+                    0  -> '$selected'
+                    $refresh eval
+                }
+            }]
+
+        [ui.kind: 'ui.separator']
+
+        # ── Close ─────────────────────────────────────────────────────────────
+        [! ui.kind: 'ui.button' label: "Close"
+            forecolor: @$tc.btnFore backcolor: @$tc.btnBack
+            focusForecolor: @$tc.focFore focusBackcolor: @$tc.focBack
+            onClick: { false window.hide }]
+    )
+]
+
+window.show drop
