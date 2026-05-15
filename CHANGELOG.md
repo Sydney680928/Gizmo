@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [0.1.0] - 2026-05-15
+
+### Added
+
 - **`window.refresh` primitive** — forces a screen redraw. Useful after a series of `ui.sprop` calls from the main script flow.
 
   > **Limitation**: has no effect inside a blocking `for` loop (the MOGWAI pump and TG share the same thread). Use a MOGWAI timer for progressive UI updates (progress bars, animations...).
@@ -35,20 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`about` command in REPL** — displays GIZMO version, MOGWAI version, and license information.
 
 - **`dialog.show` guard** — raises `MW.7` (operation not supported) if called outside an active window, with a clear error message.
-
-### Changed
-
-- **`ui.buttons` must be placed inside `childs:`** — the button bar definition is now part of the `childs:` list of the dialog definition record, consistent with other components.
-
-### Fixed
-
-- **Dialog component values** — field values (text, checked, index...) are now correctly returned in the result record. Previously, the `ui.` prefix in `ui.kind` values caused all fields to return `null`.
-
-- **Dialog component labels** — external labels (`label:` key) are now correctly displayed in dialogs. The dialog builder now uses `ComponentFactory.AddChildren` which handles label creation.
-
-## [0.1.0] - 2026-05-12
-
-### Added
 
 - **Window primitives** — `window.show`, `window.hide`, `window.update`, `window.active`, `window.current`
 
