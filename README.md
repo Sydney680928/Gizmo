@@ -4,12 +4,10 @@
 
 ![GIZMO](images/gizmo_logo.png)
 
-> ⚠️ **Early preview — v0.1.0**  
-> GIZMO is in active development. APIs may change before the first stable release.
-
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue)
 ![.NET](https://img.shields.io/badge/.NET-10-purple)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+[![Website](https://img.shields.io/badge/website-gizmo.mogwai.eu.com-brightgreen)](https://gizmo.mogwai.eu.com)
 
 ---
 
