@@ -69,6 +69,8 @@ namespace Gizmo
                 }
             };
 
+            var editor = new GizmoEditor(host.Engine);
+
             while (true)
             {
                 Console.WriteLine();
@@ -79,7 +81,54 @@ namespace Gizmo
 
                 if (cmd == "BYE")
                 {
+                    if (editor.HasUnsavedChanges)
+                    {
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("⚠  The editor has unsaved changes.");
+                        Console.ResetColor();
+                        Console.Write("   Exit anyway? (y/N) ");
+
+                        var confirm = Console.ReadLine();
+                        if (!string.Equals(confirm?.Trim(), "y", StringComparison.OrdinalIgnoreCase))
+                            continue;
+                    }
+
                     break;
+                }
+                else if (cmd == "EDIT")
+                {
+                    // Editor/run loop: the editor reopens automatically after
+                    // each F5 execution, until the user quits (Ctrl+Q).
+                    do
+                    {
+                        editor.Open();
+
+                        if (editor.PendingRunCode is string codeToRun)
+                        {
+                            try
+                            {
+                                Console.WriteLine();
+                                Console.WriteLine("── Run ─────────────────────────────");
+
+                                var result = await host.Engine.RunAsync(codeToRun, true);
+
+                                Console.WriteLine();
+                                Console.WriteLine(result.ToString());
+                                Console.WriteLine("────────────────────────────────────");
+                                Console.WriteLine("Returning to editor...");
+                                await Task.Delay(1200);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                                await Task.Delay(1200);
+                            }
+                        }
+
+                    } while (editor.PendingRunCode != null);
+
+                    continue;
                 }
                 else if (cmd == "STUDIO")
                 {
@@ -101,6 +150,7 @@ namespace Gizmo
                     Console.WriteLine("  gizmo <script.mog>  Run a script from a file.");
                     Console.WriteLine();
                     Console.WriteLine("Commands (in interactive mode):");
+                    Console.WriteLine("  edit                    Open the TUI code editor.");
                     Console.WriteLine("  studio                  Start network communication with MOGWAI Studio or VS Code extension.");
                     Console.WriteLine("  <file.mog> run          Run script <file.mog>");
                     Console.WriteLine("  about                   Show information about GIZMO.");
