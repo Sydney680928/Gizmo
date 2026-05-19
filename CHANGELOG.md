@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`edit` command in REPL** — opens the built-in full-screen TUI code editor powered by Terminal.Gui v2.
+
+  Features:
+  - Line numbers column
+  - Dirty indicator (`●`) in the window title
+  - `Ln / Col` status bar
+  - Keyboard shortcuts: `Ctrl+N` New, `Ctrl+O` Open, `Ctrl+W` Save, `Ctrl+A` Save as, `F5` Run, `Ctrl+Q` Quit
+  - Editor/run loop: `F5` closes the editor, executes the script, then reopens the editor automatically
+  - Unsaved changes warning when exiting with `bye`
+
 ### Changed
 
 ### Fixed

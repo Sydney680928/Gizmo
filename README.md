@@ -239,7 +239,15 @@ Run `gizmo` without arguments to enter interactive mode:
 gizmo
 ```
 
-Type MOGWAI expressions directly, load scripts with `run`, or connect to VS Code (via the MOGWAI extension) or MOGWAI Studio with `studio`.
+Type MOGWAI expressions directly, load scripts with `run`, or open the built-in code editor with `edit`.
+
+| Command | Description |
+|---|---|
+| `edit` | Open the built-in TUI code editor |
+| `studio` | Connect to MOGWAI Studio or the VS Code extension |
+| `help` | Show usage instructions |
+| `about` | Show version information |
+| `bye` | Exit GIZMO |
 
 ---
 
@@ -283,7 +291,7 @@ dotnet publish -c Release -r linux-arm64 --self-contained
 - [x] Modal dialogs, message boxes, file dialogs
 - [x] Window navigation (show / hide)
 - [ ] Component color customization
-- [ ] Built-in script editor (lightweight IDE within GIZMO)
+- [x] Built-in script editor — `edit` command opens a full-screen TUI editor
 - [ ] MOGWAI Studio integration
 
 ---
