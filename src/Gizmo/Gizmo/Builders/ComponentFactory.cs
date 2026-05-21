@@ -74,7 +74,7 @@ internal static class ComponentFactory
     /// directly to the parent (no wrapper View) so TG v2 focus chain is preserved.
     /// </summary>
     public static void AddChildren(View container, IEnumerable<MOGRecord> childDefs,
-        MogwaiEngine engine, UiContext context, Scheme? inheritedScheme = null)
+        MogwaiEngine engine, UiContext context, Scheme? inheritedScheme = null, int yOffset = 0)
     {
         View? previous = null;
 
@@ -84,7 +84,11 @@ internal static class ComponentFactory
             if (view is null) continue;
 
             var kind = RecordHelper.GetString(def, "ui.kind");
-            var y = previous is null ? Pos.Absolute(0) : Pos.Bottom(previous) + 1;
+            var y = RecordHelper.HasKey(def, "y")
+                ? Pos.Absolute(RecordHelper.GetInt(def, "y"))
+                : previous is null ? Pos.Absolute(yOffset) : Pos.Bottom(previous) + 1;
+            var hasExplicitX = RecordHelper.HasKey(def, "x");
+            var explicitX    = hasExplicitX ? Pos.Absolute(RecordHelper.GetInt(def, "x")) : Pos.Absolute(0);
             var labelText = NeedsExternalLabel(kind)
                             ? RecordHelper.GetString(def, "label")
                             : "";
@@ -99,7 +103,7 @@ internal static class ComponentFactory
                     Width = Dim.Absolute(LabelWidth),
                     CanFocus = false
                 };
-                view.X = Pos.Right(label);
+                view.X = hasExplicitX ? explicitX : Pos.Right(label);
                 view.Y = y;
                 view.Width = Dim.Fill();
 
@@ -109,7 +113,7 @@ internal static class ComponentFactory
             }
             else if (kind == "ui.button")
             {
-                view.X = Pos.Center();
+                view.X = hasExplicitX ? explicitX : Pos.Center();
                 view.Y = y;
                 view.Width = Dim.Auto();
 
@@ -119,11 +123,11 @@ internal static class ComponentFactory
             }
             else
             {
-                view.X = Pos.Absolute(0);
+                view.X = hasExplicitX ? explicitX : Pos.Absolute(0);
                 view.Y = y;
 
                 if (kind is not "ui.check" and not "ui.label")
-                    view.Width = Dim.Fill();
+                    view.Width = hasExplicitX ? Dim.Auto() : Dim.Fill();
 
                 container.Add(view);
                 ApplyColorScheme(view, def, inheritedScheme);

@@ -48,9 +48,14 @@ internal static class WindowBuilder
         // ── Menu bar (Bar with Shortcuts) ─────────────────────────────────────
         if (RecordHelper.HasKey(def, "menu"))
         {
-            var menuBar = BuildMenuBar(def, engine, context);
+            var (menuBar, popupMenus) = BuildMenuBar(def, engine, context);
             menuBar.Y = Pos.Absolute(0);
             window.Add(menuBar);
+
+            // Popup menus must be added to the window separately so they
+            // can overlap the content area when visible.
+            foreach (var popup in popupMenus)
+                window.Add(popup);
         }
 
         // ── Status bar (Bar with Shortcuts, anchored to bottom) ───────────────
@@ -62,7 +67,9 @@ internal static class WindowBuilder
         }
 
         // ── Child components ──────────────────────────────────────────────────
-        ComponentFactory.AddChildren(window, RecordHelper.GetRecordList(def, "childs"), engine, context, windowScheme);
+        // Start children at Y=1 when a menu bar is present to avoid overlap.
+        var childYOffset = RecordHelper.HasKey(def, "menu") ? 1 : 0;
+        ComponentFactory.AddChildren(window, RecordHelper.GetRecordList(def, "childs"), engine, context, windowScheme, childYOffset);
 
         return window;
     }
@@ -73,17 +80,23 @@ internal static class WindowBuilder
     /// Builds a Bar containing one Shortcut per menu card.
     /// Each card's items are added as MenuItem sub-views under a Menu popup.
     /// </summary>
-    private static Bar BuildMenuBar(MOGRecord def, MogwaiEngine engine, UiContext context)
+    private static (Bar bar, List<Menu> popupMenus) BuildMenuBar(MOGRecord def, MogwaiEngine engine, UiContext context)
     {
-        var bar      = new Bar { Width = Dim.Fill() };
-        var cardDefs = RecordHelper.GetRecordList(def, "menu");
+        var bar        = new Bar { Width = Dim.Fill() };
+        var cardDefs   = RecordHelper.GetRecordList(def, "menu");
+        var popupMenus = new List<Menu>();
 
         foreach (var card in cardDefs)
         {
             var cardTitle = RecordHelper.GetString(card, "title");
             var itemDefs  = RecordHelper.GetRecordList(card, "items");
 
-            var menu = new Menu();
+            var menu = new Menu
+            {
+                Visible     = false,
+                Arrangement = ViewArrangement.Overlapped,
+                Y           = Pos.Absolute(1),  // just below the bar
+            };
 
             foreach (var itemDef in itemDefs)
             {
@@ -98,7 +111,7 @@ internal static class WindowBuilder
                 var action = RecordHelper.GetEvent(itemDef, "onClick");
 
                 var shortcut = keyStr.Length == 1
-                    ? ((Key)char.ToUpper(keyStr[0])).WithCtrl
+                    ? ((Key)keyStr[0]).WithCtrl
                     : Key.Empty;
 
                 var menuItem = new MenuItem { Title = label, Key = shortcut };
@@ -109,6 +122,7 @@ internal static class WindowBuilder
                     var capturedDef    = itemDef;
                     menuItem.Activated += async (_, _) =>
                     {
+                        menu.Visible = false;
                         var eventData = ComponentFactory.BuildEventData(engine, capturedDef);
                         await ComponentFactory.ExecuteAction(capturedAction, engine, eventData, context);
                     };
@@ -117,17 +131,22 @@ internal static class WindowBuilder
                 menu.Add(menuItem);
             }
 
+            var capturedMenu = menu;
             var cardShortcut = new Shortcut { Title = cardTitle };
             cardShortcut.Action += () =>
             {
-                menu.Visible = !menu.Visible;
-                if (menu.Visible) menu.SetFocus();
+                // Pos.Left() cannot cross container boundaries (Shortcut is in Bar,
+                // Menu is in Window) — use absolute frame position instead.
+                capturedMenu.X       = Pos.Absolute(cardShortcut.Frame.X);
+                capturedMenu.Visible = !capturedMenu.Visible;
+                if (capturedMenu.Visible) capturedMenu.SetFocus();
             };
 
             bar.Add(cardShortcut);
+            popupMenus.Add(menu);
         }
 
-        return bar;
+        return (bar, popupMenus);
     }
 
     // ── Status bar ────────────────────────────────────────────────────────────

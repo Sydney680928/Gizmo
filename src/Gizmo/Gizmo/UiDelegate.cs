@@ -210,13 +210,75 @@ public sealed class UiDelegate : IDelegate
 
     public async Task<EvalResult> ConsoleShow(MogwaiEngine engine)                            => EvalResult.NoError;
     public async Task<EvalResult> ConsoleHide(MogwaiEngine engine)                            => EvalResult.NoError;
-    public async Task<EvalResult> ConsoleLocate(MogwaiEngine engine, int x, int y)            => EvalResult.NoError;
-    public async Task<(EvalResult result, int x, int y)> ConsoleGetCursorPosition(MogwaiEngine engine)
-        => (EvalResult.NoError, 0, 0);
-    public async Task<EvalResult> ConsoleSetForegroundColor(MogwaiEngine engine, string color) => EvalResult.NoError;
-    public async Task<EvalResult> ConsoleSetBackgroundColor(MogwaiEngine engine, string color) => EvalResult.NoError;
-    public async Task<(EvalResult result, int key)> ConsoleGetInputKey(MogwaiEngine engine)
-        => (EvalResult.NoError, 0);
+    public Task<EvalResult> ConsoleLocate(MogwaiEngine engine, int x, int y)
+    {
+        lock (_consoleAccessLocker)
+            Console.SetCursorPosition(x, y);
+
+        return Task.FromResult(EvalResult.NoError);
+    }
+
+    public Task<(EvalResult result, int x, int y)> ConsoleGetCursorPosition(MogwaiEngine engine)
+    {
+        var r = Console.GetCursorPosition();
+        return Task.FromResult((EvalResult.NoError, r.Left, r.Top));
+    }
+
+    public Task<EvalResult> ConsoleSetForegroundColor(MogwaiEngine engine, string color)
+    {
+        lock (_consoleAccessLocker)
+            switch (color.ToLower())
+            {
+                case "black": Console.ForegroundColor = ConsoleColor.Black; break;
+                case "blue": Console.ForegroundColor = ConsoleColor.Blue; break;
+                case "cyan": Console.ForegroundColor = ConsoleColor.Cyan; break;
+                case "gray": Console.ForegroundColor = ConsoleColor.Gray; break;
+                case "green": Console.ForegroundColor = ConsoleColor.Green; break;
+                case "magenta": Console.ForegroundColor = ConsoleColor.Magenta; break;
+                case "red": Console.ForegroundColor = ConsoleColor.Red; break;
+                case "white": Console.ForegroundColor = ConsoleColor.White; break;
+                case "yellow": Console.ForegroundColor = ConsoleColor.Yellow; break;
+                default: break;
+            }
+
+        return Task.FromResult(EvalResult.NoError);
+    }
+
+    public Task<EvalResult> ConsoleSetBackgroundColor(MogwaiEngine engine, string color)
+    {
+        lock (_consoleAccessLocker)
+            switch (color.ToLower())
+            {
+                case "black": Console.BackgroundColor = ConsoleColor.Black; break;
+                case "blue": Console.BackgroundColor = ConsoleColor.Blue; break;
+                case "cyan": Console.BackgroundColor = ConsoleColor.Cyan; break;
+                case "gray": Console.BackgroundColor = ConsoleColor.Gray; break;
+                case "green": Console.BackgroundColor = ConsoleColor.Green; break;
+                case "magenta": Console.BackgroundColor = ConsoleColor.Magenta; break;
+                case "red": Console.BackgroundColor = ConsoleColor.Red; break;
+                case "white": Console.BackgroundColor = ConsoleColor.White; break;
+                case "yellow": Console.BackgroundColor = ConsoleColor.Yellow; break;
+                default: break;
+            }
+
+        return Task.FromResult(EvalResult.NoError);
+    }
+
+    public Task<(EvalResult result, int key)> ConsoleGetInputKey(MogwaiEngine engine)
+    {
+        int key = -1;
+
+        lock (_consoleAccessLocker)
+        {
+            if (Console.KeyAvailable)
+            {
+                var keyInfo = Console.ReadKey(true);
+                key = (int)keyInfo.Key;
+            }
+        }
+
+        return Task.FromResult((EvalResult.NoError, key));
+    }
 
     // ── Messages / debug ─────────────────────────────────────────────────────
 
