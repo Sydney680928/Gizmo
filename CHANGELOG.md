@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [1.0.0] - 2026-05-21
+
+### Added
+
 - **`edit` command in REPL** — opens the built-in full-screen TUI code editor powered by Terminal.Gui v2.
 
   Features:
@@ -18,10 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Keyboard shortcuts: `Ctrl+N` New, `Ctrl+O` Open, `Ctrl+W` Save, `Ctrl+A` Save as, `F5` Run, `Ctrl+Q` Quit
   - Editor/run loop: `F5` closes the editor, executes the script, then reopens the editor automatically
   - Unsaved changes warning when exiting with `bye`
-
-### Changed
-
-### Fixed
 
 ## [0.1.0] - 2026-05-15
 
@@ -184,5 +188,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Sydney680928/gizmo/releases/tag/v1.0.0
 [0.1.0]: https://github.com/Sydney680928/gizmo/releases/tag/v0.1.0
