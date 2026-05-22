@@ -539,6 +539,39 @@ internal static class ComponentFactory
                     .ToList();
                 lv2.Source = new ListWrapper<string>(new ObservableCollection<string>(newItems));
                 break;
+
+            case "rows" when view is TableView tvRows && val is MOGList rowList:
+                var dt = (tvRows.Table as DataTableSource)?.DataTable;
+                if (dt is null) break;
+                dt.Rows.Clear();
+                foreach (var rowItem in rowList.Items)
+                {
+                    var dr = dt.NewRow();
+                    if (rowItem is MOGList rowValues)
+                    {
+                        for (int i = 0; i < Math.Min(rowValues.Items.Count, dt.Columns.Count); i++)
+                        {
+                            var v = rowValues.Items[i];
+
+                            if (v is MOGString s)
+                            {
+                                dr[i] = s.Value;
+                            }
+                            else
+                            {
+                                dr[i] = v.ToString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        dr[0] = rowItem?.ToString() ?? "";
+                    }
+
+                    dt.Rows.Add(dr);
+                }
+                tvRows.Table = new DataTableSource(dt);
+                break;
         }
     }
 
