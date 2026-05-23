@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [1.1.0] - 2026-05-23
+
+### Added
+
 - **`x:` and `y:` positioning on components** — components now accept explicit `x:` and `y:` keys to override the automatic vertical stacking. When `x:` is specified, the component width switches to `auto` instead of `fill`. Both keys are optional and independent.
 
 - **`rows:` updatable on `ui.tableview`** — the `rows:` property of a `ui.tableview` can now be set at runtime via `window.update` or `ui.sprop`, replacing all table data in one call.
@@ -22,9 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```mogwai
   [! name: 'statusbar' title: "Ready - 42 rows computed"] window.update
   ```
-
-### Changed
-
 ### Fixed
 
 - **Menu `y:` property ignored** — child components now respect an explicit `y:` key in their definition. Falls back to automatic stacking if not specified.
@@ -210,6 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Sydney680928/gizmo/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Sydney680928/gizmo/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/Sydney680928/gizmo/releases/tag/v0.1.0
