@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`x:` and `y:` positioning on components** — components now accept explicit `x:` and `y:` keys to override the automatic vertical stacking. When `x:` is specified, the component width switches to `auto` instead of `fill`. Both keys are optional and independent.
+
+- **`rows:` updatable on `ui.tableview`** — the `rows:` property of a `ui.tableview` can now be set at runtime via `window.update` or `ui.sprop`, replacing all table data in one call.
+
+  ```mogwai
+  [! name: 'myTable' rows: (("1.0" "3.14") ("2.0" "6.28"))] window.update
+  ```
+
+- **Status bar updatable at runtime** — status bar items are now registered with reserved names (`statusbar`, `statusbar.1`, `statusbar.2`...) and can be updated via `window.update` using the `title:` property.
+
+  ```mogwai
+  [! name: 'statusbar' title: "Ready - 42 rows computed"] window.update
+  ```
+
 ### Changed
 
 ### Fixed
