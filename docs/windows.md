@@ -267,7 +267,12 @@ A menu bar is defined with the `menu:` key — a list of card records, each cont
 window.show drop
 ```
 
-> The `key:` value defines a `Ctrl+key` keyboard shortcut (single character only).
+> **`key:` shortcut rules:**
+> - Lowercase letter (e.g. `"o"`) → `Ctrl+O`
+> - Uppercase letter (e.g. `"O"`) → `Ctrl+Shift+O`
+> - More than one character → shortcut ignored, item still appears in the menu
+
+> **Layout note:** when a `menu:` is present, child components automatically start at `Y=1` to avoid overlapping the menu bar. Use `y:` to position a component further down if needed.
 
 ---
 
@@ -283,6 +288,25 @@ A status bar is defined with the `statusbar:` key — a list of strings:
     childs: ( ... )
 ]
 window.show drop
+```
+
+Status bar items are automatically registered with reserved names and can be updated at runtime via `window.update`:
+
+| Item | Reserved name |
+|---|---|
+| First item | `statusbar` |
+| Second item | `statusbar.1` |
+| Third item | `statusbar.2` |
+| ... | ... |
+
+The updatable property is `title:`:
+
+```mogwai
+# Update the first status bar item
+[! name: 'statusbar' title: "Ready"] window.update
+
+# Update the second item
+[! name: 'statusbar.1' title: "Ln 42  Col 5"] window.update
 ```
 
 ---

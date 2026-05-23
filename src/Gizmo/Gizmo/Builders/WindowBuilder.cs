@@ -61,7 +61,7 @@ internal static class WindowBuilder
         // ── Status bar (Bar with Shortcuts, anchored to bottom) ───────────────
         if (RecordHelper.HasKey(def, "statusbar"))
         {
-            var statusBar = BuildStatusBar(def);
+            var statusBar = BuildStatusBar(def, context);
             statusBar.Y = Pos.AnchorEnd();
             window.Add(statusBar);
         }
@@ -151,13 +151,19 @@ internal static class WindowBuilder
 
     // ── Status bar ────────────────────────────────────────────────────────────
 
-    private static Bar BuildStatusBar(MOGRecord def)
+    private static Bar BuildStatusBar(MOGRecord def, UiContext context)
     {
         var bar   = new Bar { Width = Dim.Fill() };
         var texts = RecordHelper.GetStringList(def, "statusbar");
 
-        foreach (var t in texts)
-            bar.Add(new Shortcut { Title = t });
+        for (int i = 0; i < texts.Count; i++)
+        {
+            var sc = new Shortcut { Title = texts[i] };
+            // Register as "statusbar" (first item) or "statusbar.N" (subsequent items)
+            var regName = i == 0 ? "statusbar" : $"statusbar.{i}";
+            context.RegisterComponent(regName, sc);
+            bar.Add(sc);
+        }
 
         return bar;
     }

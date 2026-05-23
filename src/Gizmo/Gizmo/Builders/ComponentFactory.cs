@@ -540,6 +540,9 @@ internal static class ComponentFactory
                 lv2.Source = new ListWrapper<string>(new ObservableCollection<string>(newItems));
                 break;
 
+            case "title" when view is Shortcut sc:
+                sc.Title = MogStr(val); break;
+
             case "rows" when view is TableView tvRows && val is MOGList rowList:
                 var dt = (tvRows.Table as DataTableSource)?.DataTable;
                 if (dt is null) break;

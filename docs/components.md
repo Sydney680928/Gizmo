@@ -13,6 +13,23 @@ Components are stacked **vertically** inside their container. The layout is auto
 - All other components fill the available width
 - Use `height:` to control the height of scrollable components
 
+### Explicit positioning — `x:` and `y:`
+
+Use `x:` and `y:` to override the automatic layout and position a component at an absolute column/row:
+
+| Key | Type | Description |
+|---|---|---|
+| `x:` | Number | Absolute column position (0-based). When specified, the component width switches to `auto` instead of `fill`. |
+| `y:` | Number | Absolute row position (0-based). When specified, the component is placed at that row instead of being stacked below the previous one. |
+
+```mogwai
+# Two buttons side by side on row 5
+[ui.kind: 'ui.button' label: "OK"     x: 15 y: 5 onClick: { true  window.hide }]
+[ui.kind: 'ui.button' label: "Cancel" x: 25 y: 5 onClick: { false window.hide }]
+```
+
+> When placing multiple components on the same row, specify `y:` on each of them — the automatic stacking always places a component below the previous one if `y:` is absent.
+
 ---
 
 ## Common keys
@@ -358,6 +375,16 @@ Multi-column table with scrolling and full-row selection.
 **`ui.eventData` contains:** `[index: N row: ("cell0" "cell1" ...)]` *(index is 1-based, row is a list of strings)*
 
 **`ui.gprop` returns:** `[index: N]`
+
+**`window.update` accepts:** `rows:`
+
+```mogwai
+# Replace all rows at runtime
+[! name: 'valuesTable' rows: (("1" "3.14") ("2" "6.28"))] window.update
+
+# Clear all rows
+[name: 'valuesTable' rows: ()] window.update
+```
 
 ***
 
