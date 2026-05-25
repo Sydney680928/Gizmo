@@ -1,0 +1,114 @@
+mogwai.reset
+
+console.clear
+
+to 'calculate' params [wFormula: .string wStart: .string wEnd: .string wStep: .string] do
+{
+	guard
+	{
+		wFormula ->code -> 'wFormula'
+		wStart ->num -> 'wStart'
+		wEnd ->num -> 'wEnd'
+		wStep ->num -> 'wStep'
+
+		() -> 'values'
+
+		wStart wEnd for 'X' step wStep do
+		{
+			wFormula eval (.number) check -> 'v'
+			&values (! X v) + 
+		}
+
+		values
+	}
+	else
+	{
+		switch
+		{
+			(wStart ->type .number !=) then {"start is not a valid number !"}
+
+			(wEnd ->type .number !=) then {"end is not a valid number !"}
+
+			(wStep ->type .number !=) then {"step is not a valid number !"}
+
+			(true) then {"Error {! error.last}" eval}
+		}
+	}
+}
+
+[
+	name: 'main'
+
+	title: "FORMULA CALCULATOR"
+
+	statusbar: ("Ready")
+
+	childs:
+	(
+		[ui.kind: 'ui.edit' name: 'formulaEdit' y: 2 label: "Formula:" text: "2 X * 7 + X sin +"]
+		[ui.kind: 'ui.edit' name: 'startEdit' label: "Start:" text: "-10"]
+		[ui.kind: 'ui.edit' name: 'endEdit' label: "End:" text: "10"]
+		[ui.kind: 'ui.edit' name: 'stepEdit' label: "Step:" text: "1"]	
+		
+		[
+			ui.kind: 'ui.button' 
+			name: 'calculateButton' 
+			label: "Calculate" 
+			
+			onClick: 
+			{ 
+				[window.update name: 'valuesTableview' rows: ()]
+				[window.update name: 'statusbar' title: "Calculating..."]
+
+				after 0 do
+				{
+					now -> 'begin'
+
+					[!
+						wFormula: {! [name: 'formulaEdit'] ui.gprop text: get}
+						wStart: {! [name: 'startEdit'] ui.gprop text: get}
+						wEnd: {! [name: 'endEdit'] ui.gprop text: get}
+						wStep: {! [name: 'stepEdit'] ui.gprop text: get}
+					]
+
+					calculate -> 'r'
+
+					now begin - ->duration ms: get -> 'd'
+
+					if (r ->type .list ==) then
+					{
+
+						[! window.update name: 'valuesTableview' rows: r]
+						[! window.update name: 'statusbar' title: "Ready - {! r size} values - calculation time {! d} ms"]
+					}
+					else
+					{
+						[window.update name: 'valuesTableview' rows: ()]
+						[! window.update name: 'statusbar' title: r]
+					}
+				}
+			}
+		]
+
+		[
+			ui.kind: 'ui.tableview'
+			name: 'valuesTableview'
+			columns: ("X" "Y")
+			rows: ( )
+			height: 15
+		]
+
+		[
+			ui.kind: 'ui.button' 
+			name: 'exitButton' 
+			label: "Exit" 
+			
+			onClick: 
+			{ 
+				true window.hide
+			}
+		]
+	)
+
+] window.show drop
+

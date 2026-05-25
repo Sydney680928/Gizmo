@@ -13,6 +13,7 @@ gizmo examples/clock.mog
 gizmo examples/calculator.mog
 gizmo examples/todo.mog
 gizmo examples/showcase.mog
+gizmo examples/formula.mog
 ```
 
 ---
@@ -118,6 +119,39 @@ New task: [___________]
 A visual demo that displays all available GIZMO components in a single window. No actions are wired to the buttons — this script is useful to understand how components are declared and laid out, and to explore the dark theme rendering.
 
 **Components shown:** `ui.label`, `ui.edit`, `ui.password`, `ui.integer`, `ui.float`, `ui.check`, `ui.radio`, `ui.combo`, `ui.tableview`, `ui.progress`, `ui.frame`, `ui.separator`, `ui.button`
+
+---
+
+## `formula.mog` — Formula calculator
+
+A mathematical function plotter — enter a formula with variable `X`, define a range and a step, and compute a table of `(X, Y)` values.
+
+**Features demonstrated:**
+- `->code` + `eval` — compile a user-entered string into executable MOGWAI code
+- `guard { } else { }` + `switch` for input validation
+- `(.number) check` to verify the formula pushes a numeric result
+- `after 0 do { }` to yield the TUI thread and allow the interface to refresh before a blocking computation
+- `ui.tableview` updated at runtime via `window.update`
+- `statusbar` updated at runtime
+
+```
+FORMULA CALCULATOR
+──────────────────────────────────────────
+Formula: [2 X * 7 + X sin +            ]
+Start:   [-10                           ]
+End:     [10                            ]
+Step:    [1                             ]
+                [ Calculate ]
+┌─────────────────────────────────────────┐
+│ X       │ Y                             │
+│ -10     │ -13.456                       │
+│ -9      │ -10.412                       │
+│  ...    │  ...                          │
+└─────────────────────────────────────────┘
+                [  Exit  ]
+──────────────────────────────────────────
+Ready - Calculation time 12 ms
+```
 
 ---
 
