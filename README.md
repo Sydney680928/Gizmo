@@ -39,6 +39,15 @@ No C#. No compilation. Just a script and `gizmo yourapp.mog`.
 
 ---
 
+## Blog Articles
+
+A curated list of English articles about GIZMO on [coding4phone.com](https://coding4phone.com):
+
+- [GIZMO — Build TUI Applications with MOGWAI](https://coding4phone.com/?p=2479&lang=en)
+- [Evaluating a user-defined mathematical formula with GIZMO and MOGWAI](https://coding4phone.com/?p=2518&lang=en)
+
+---
+
 ## Quick start
 
 ### 1. Download GIZMO
