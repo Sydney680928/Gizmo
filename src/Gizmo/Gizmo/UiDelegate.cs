@@ -18,6 +18,7 @@ using MOGWAI.Interfaces;
 using MOGWAI.Objects;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection;
 using System.Text;
 
 namespace Gizmo;
@@ -33,7 +34,7 @@ public sealed class UiDelegate : IDelegate
 
     public UiDelegate()
     {
-        _engine = new MogwaiEngine("MOGWAI_UI", keepAlive: true, useDefaultFolders: true);
+        _engine = new MogwaiEngine("GIZMO_MOGWAI", keepAlive: true, useDefaultFolders: true);
         _engine.Delegate = this;
     }
 
@@ -56,7 +57,8 @@ public sealed class UiDelegate : IDelegate
         "ui.gprop",
         "ui.sprop",
         "run",
-        "process.exec"
+        "process.exec",
+        "gizmo.info",
     ];
 
     public async Task<EvalResult> ExecuteHostFunction(MogwaiEngine engine, string word)
@@ -76,6 +78,7 @@ public sealed class UiDelegate : IDelegate
             "ui.sprop" => PropPrimitives.Set(engine, _context),
             "run" => await RunPrimitive(engine, word),
             "process.exec" => await ProcessExec(engine, word),
+            "gizmo.info" => await GizmoInfo(engine, word),  
             _ => EvalResult.NoExternalFunction
         };
     }
@@ -154,6 +157,33 @@ public sealed class UiDelegate : IDelegate
             return EvalResult.Failure(Engine, Error.InternalError, "Unable to execute process");
         }
 
+        return EvalResult.NoError;
+    }
+
+    private async Task<EvalResult> GizmoInfo(MogwaiEngine engine, string word)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var attr = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
+        string strVersion = attr?.Version ?? string.Empty;
+
+        var infos = new MOGRecord(Engine);
+        infos.SetString("version", strVersion);
+
+        var code = new MOGCode(Engine, "mogwai.info", 0, null);
+        var r = await code.Execute();
+
+        if (r.IsSuccess)
+        {
+            var s = Engine.StackSign(1);    
+
+            if (s.Count > 0 && s[0] == typeof(MOGRecord))
+            {
+                var record = Engine.StackPopRecord();
+                infos.SetItem("mogwai", record);    
+            }
+        }
+        
+        Engine.StackPush(infos);
         return EvalResult.NoError;
     }
 

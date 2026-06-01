@@ -24,6 +24,38 @@ Loads and executes a MOGWAI script file (`.mog`). The script runs in the same en
 
 ---
 
+## GIZMO information
+
+***
+
+### `gizmo.info`
+
+Returns a record containing version information about the running GIZMO instance and the underlying MOGWAI engine. This is a **GIZMO-specific** primitive.
+
+```
+gizmo.info
+```
+
+Pushes a record onto the stack:
+
+| Key | Type | Description |
+|---|---|---|
+| `version:` | String | GIZMO version (e.g. `"1.3.0.0"`) |
+| `mogwai:` | Record | Full record returned by the MOGWAI `mogwai.info` primitive |
+
+```mogwai
+gizmo.info -> '$info'
+
+$info version: get ?                    # "1.3.0.0"
+$info mogwai: get version: get ?        # "8.8.0.0"
+$info mogwai: get platform: get ?       # "WINDOWS"
+$info mogwai: get framework: get ?      # ".NET 10.0.x"
+```
+
+The `mogwai:` key contains the full `mogwai.info` record — see the [MOGWAI documentation](https://mogwai.eu.com) for the complete list of available keys (`platform:`, `architecture:`, `primitives:`, `skills:`, etc.).
+
+---
+
 ## Property primitives
 
 ***

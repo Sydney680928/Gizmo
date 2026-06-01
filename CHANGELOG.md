@@ -9,7 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`gizmo.info` primitive** — returns a record with GIZMO version information and the full `mogwai.info` record from the underlying engine.
+
+  ```mogwai
+  gizmo.info -> '$info'
+  $info version: get ?              # "1.3.0.0"
+  $info mogwai: get version: get ?  # "8.8.0.0"
+  ```
+
+  | Key | Type | Description |
+  |---|---|---|
+  | `version:` | String | GIZMO version |
+  | `mogwai:` | Record | Full record returned by `mogwai.info` |
+
 ### Changed
+
+- Using **MOGWAI v8.8.0** — the latest version of the MOGWAI scripting engine.
 
 ### Fixed
 
