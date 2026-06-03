@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Using **MOGWAI v8.8.0** — the latest version of the MOGWAI scripting engine.
+- Using **MOGWAI v8.8.1** — the latest version of the MOGWAI scripting engine.
 
 ### Fixed
 
