@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [1.4.0] - 2026-06-04
+
+### Added
+
 - **`gizmo.info` primitive** — returns a record with GIZMO version information and the full `mogwai.info` record from the underlying engine.
 
   ```mogwai
@@ -236,7 +244,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Sydney680928/gizmo/compare/v1.2.0...v1.4.0
 [1.2.0]: https://github.com/Sydney680928/gizmo/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Sydney680928/gizmo/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Sydney680928/gizmo/compare/v0.1.0...v1.0.0
