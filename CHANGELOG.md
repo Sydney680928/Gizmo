@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [1.5.0] - 2026-06-05
+
+### Changed
+
+- Using **MOGWAI v8.8.2** the latest version of MOGWAI Scripting Engine.
+
 ## [1.4.0] - 2026-06-04
 
 ### Added
@@ -242,7 +248,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/Sydney680928/gizmo/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Sydney680928/gizmo/compare/v1.2.0...v1.4.0
 [1.2.0]: https://github.com/Sydney680928/gizmo/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Sydney680928/gizmo/compare/v1.0.0...v1.1.0
