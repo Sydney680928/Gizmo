@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`TERMINAL` and `GIZMO` skills** — two new skills added to align GIZMO with MOGWAI_CLI. The `TERMINAL` skill brings GIZMO in line with everything MOGWAI_CLI is capable of. The `GIZMO` skill makes it easy to check that a script is explicitly written for GIZMO.
+
 ### Changed
 
 ### Fixed
