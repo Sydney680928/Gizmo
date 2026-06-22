@@ -200,6 +200,7 @@ public sealed class UiDelegate : IDelegate
     }
 
     public async Task<EvalResult> EngineDidPause(MogwaiEngine engine)    => EvalResult.NoError;
+    
     public async Task<EvalResult> EngineDidResume(MogwaiEngine engine)   => EvalResult.NoError;
 
     // ── Console I/O — ignoré en mode TUI ─────────────────────────────────────
@@ -239,7 +240,9 @@ public sealed class UiDelegate : IDelegate
     }
 
     public async Task<EvalResult> ConsoleShow(MogwaiEngine engine)                            => EvalResult.NoError;
+    
     public async Task<EvalResult> ConsoleHide(MogwaiEngine engine)                            => EvalResult.NoError;
+    
     public Task<EvalResult> ConsoleLocate(MogwaiEngine engine, int x, int y)
     {
         lock (_consoleAccessLocker)
@@ -314,21 +317,26 @@ public sealed class UiDelegate : IDelegate
 
     public async Task<EvalResult> MessageReceivedFromRuntime(MogwaiEngine engine, string message, MOGObject parameter)
         => EvalResult.NoError;
+    
     public async Task<EvalResult> DebugMessage(MogwaiEngine engine, string message)
     {
         Debug.WriteLine($"[MOGWAI] {message}");
         return EvalResult.NoError;
     }
     
-    
     public async Task<EvalResult> DebugClear(MogwaiEngine engine)                   => EvalResult.NoError;
 
     // ── MOGWAI STUDIO ─────────────────────────────────────────────────────────
 
     public async Task<EvalResult> StudioDidConnect(MogwaiEngine engine)                                  => EvalResult.NoError;
+   
     public async Task<EvalResult> StudioDidDisconnect(MogwaiEngine engine)                               => EvalResult.NoError;
+    
     public async Task<EvalResult> SocketServerDidStart(MogwaiEngine engine, IPAddress address, int port) => EvalResult.NoError;
+    
     public async Task<EvalResult> SocketServerDidStop(MogwaiEngine engine)                               => EvalResult.NoError;
+
+    public string[] Skills(MogwaiEngine engine) => ["GIZMO", "TERMINAL"];
 
     // ── run primitive ─────────────────────────────────────────────────────────────
 
