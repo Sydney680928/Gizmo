@@ -9,11 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`TERMINAL` and `GIZMO` skills** — two new skills added to align GIZMO with MOGWAI_CLI. The `TERMINAL` skill brings GIZMO in line with everything MOGWAI_CLI is capable of. The `GIZMO` skill makes it easy to check that a script is explicitly written for GIZMO.
-
 ### Changed
 
 ### Fixed
+
+## [1.7.1]
+
+### Added
+
+- **`TERMINAL` and `GIZMO` skills** — two new skills added to align GIZMO with MOGWAI_CLI. The `TERMINAL` skill brings GIZMO in line with everything MOGWAI_CLI is capable of. The `GIZMO` skill makes it easy to check that a script is explicitly written for GIZMO.
+
 
 ## [1.7.0] - 2026-06-22
 
@@ -262,7 +267,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/Sydney680928/gizmo/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/Sydney680928/gizmo/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/Sydney680928/gizmo/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Sydney680928/gizmo/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Sydney680928/gizmo/compare/v1.4.0...v1.5.0
