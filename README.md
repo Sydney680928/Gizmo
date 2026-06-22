@@ -56,11 +56,23 @@ Download the latest release for your platform from the [Releases](../../releases
 
 | Platform | File |
 |---|---|
-| Windows x64 | `gizmo-win-x64.exe` |
-| macOS x64 (Intel) | `gizmo-osx-x64` |
-| macOS arm64 (Apple Silicon) | `gizmo-osx-arm64` |
-| Linux x64 | `gizmo-linux-x64` |
-| Linux arm64 | `gizmo-linux-arm64` |
+| Windows x64 | `gizmo-win-x64.zip` |
+| macOS x64 (Intel) | `gizmo-osx-x64.tar.gz` |
+| macOS arm64 (Apple Silicon) | `gizmo-osx-arm64.tar.gz` |
+| Linux x64 | `gizmo-linux-x64.tar.gz` |
+| Linux arm64 | `gizmo-linux-arm64.tar.gz` |
+
+Extract the archive for your platform:
+
+```bash
+# Windows
+# Unzip with File Explorer or: Expand-Archive gizmo-win-x64.zip
+
+# macOS / Linux
+tar xzf gizmo-osx-arm64.tar.gz   # adapt to your platform's filename
+```
+
+The Linux/macOS executable is already marked executable after extraction — no `chmod +x` needed.
 
 ### 2. Write your first app
 

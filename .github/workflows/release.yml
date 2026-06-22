@@ -52,16 +52,35 @@ jobs:
           cd ./publish/${{ matrix.rid }}
           find . -maxdepth 1 -type f ! -name "*.pdb" | head -1 | xargs -I {} mv {} ${{ matrix.binary }}
 
-      - name: Create archive
+      - name: Set executable permission (Linux/macOS)
+        if: matrix.rid != 'win-x64'
+        run: chmod +x ./publish/${{ matrix.rid }}/${{ matrix.binary }}
+
+      - name: Create archive (Windows)
+        if: matrix.rid == 'win-x64'
         run: |
           cd ./publish/${{ matrix.rid }}
           zip ../../gizmo-${{ matrix.rid }}.zip ${{ matrix.binary }}
 
-      - name: Upload artifact
+      - name: Create archive (Linux/macOS)
+        if: matrix.rid != 'win-x64'
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          tar czf ../../gizmo-${{ matrix.rid }}.tar.gz ${{ matrix.binary }}
+
+      - name: Upload artifact (Windows)
+        if: matrix.rid == 'win-x64'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.rid }}
           path: ./gizmo-${{ matrix.rid }}.zip
+
+      - name: Upload artifact (Linux/macOS)
+        if: matrix.rid != 'win-x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: ./gizmo-${{ matrix.rid }}.tar.gz
 
   release:
     name: Create Release
@@ -81,4 +100,6 @@ jobs:
           name: GIZMO ${{ github.ref_name }}
           draft: true
           prerelease: false
-          files: ./artifacts/*.zip
+          files: |
+            ./artifacts/*.zip
+            ./artifacts/*.tar.gz
