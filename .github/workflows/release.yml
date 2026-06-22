@@ -60,27 +60,27 @@ jobs:
         if: matrix.rid == 'win-x64'
         run: |
           cd ./publish/${{ matrix.rid }}
-          zip ../../gizmo-${{ matrix.rid }}.zip ${{ matrix.binary }}
+          zip ../../gizmo-${{ github.ref_name }}-${{ matrix.rid }}.zip ${{ matrix.binary }}
 
       - name: Create archive (Linux/macOS)
         if: matrix.rid != 'win-x64'
         run: |
           cd ./publish/${{ matrix.rid }}
-          tar czf ../../gizmo-${{ matrix.rid }}.tar.gz ${{ matrix.binary }}
+          tar czf ../../gizmo-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz ${{ matrix.binary }}
 
       - name: Upload artifact (Windows)
         if: matrix.rid == 'win-x64'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.rid }}
-          path: ./gizmo-${{ matrix.rid }}.zip
+          path: ./gizmo-${{ github.ref_name }}-${{ matrix.rid }}.zip
 
       - name: Upload artifact (Linux/macOS)
         if: matrix.rid != 'win-x64'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.rid }}
-          path: ./gizmo-${{ matrix.rid }}.tar.gz
+          path: ./gizmo-${{ github.ref_name }}-${{ matrix.rid }}.tar.gz
 
   release:
     name: Create Release
